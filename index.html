@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevScope | GitHub Profile Analytics</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar container">
+    <div class="brand">
+      <div class="brand-logo">
+        <i class="fa-brands fa-github"></i>
+      </div>
+      <div class="brand-copy">
+        <p class="eyebrow">GitHub Profile Analytics</p>
+        <h1>DevScope</h1>
+      </div>
+    </div>
+
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <i class="fa-solid fa-moon"></i>
+    </button>
+  </header>
+
+  <main class="container page">
+    <section class="hero card">
+      <div class="hero-copy">
+        <p class="section-tag">GitHub Profile Review</p>
+        <h2>Review public GitHub profiles with clean, practical developer insights.</h2>
+        <p class="hero-subtext">
+          Search a GitHub username to view profile details, repository trends, language usage,
+          comparison insights, and a simple profile score based on public activity.
+        </p>
+      </div>
+
+      <div class="search-layout">
+        <form id="searchForm" class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="Analyze one GitHub username..."
+            autocomplete="off"
+          />
+          <button type="submit" id="analyzeBtn">Analyze</button>
+        </form>
+
+        <form id="compareForm" class="search-bar compare-bar">
+          <i class="fa-solid fa-code-compare"></i>
+          <input
+            type="text"
+            id="compareUser1"
+            placeholder="First username"
+            autocomplete="off"
+          />
+          <input
+            type="text"
+            id="compareUser2"
+            placeholder="Second username"
+            autocomplete="off"
+          />
+          <button type="submit" id="compareBtn">Compare</button>
+        </form>
+      </div>
+
+      <div class="hero-actions">
+        <button type="button" id="copySummaryBtn" class="secondary-btn">
+          <i class="fa-regular fa-copy"></i>
+          Copy Summary
+        </button>
+        <button type="button" id="exportSummaryBtn" class="secondary-btn">
+          <i class="fa-solid fa-download"></i>
+          Export Summary
+        </button>
+      </div>
+
+      <div class="recent-wrap">
+        <div class="recent-head">
+          <span>Recent Searches</span>
+          <button type="button" id="clearRecentBtn" class="clear-btn">Clear</button>
+        </div>
+        <div id="recentSearches" class="recent-searches"></div>
+      </div>
+    </section>
+
+    <section id="messageBox" class="message-box hidden"></section>
+
+    <section id="compareSection" class="compare-section card hidden">
+      <div class="section-header">
+        <div>
+          <p class="section-tag">Profile Comparison</p>
+          <h3>Developer vs Developer</h3>
+        </div>
+      </div>
+
+      <div id="compareGrid" class="compare-grid"></div>
+    </section>
+
+    <section class="overview-grid">
+      <article class="profile-card card">
+        <div class="profile-top">
+          <img
+            id="profileAvatar"
+            src=""
+            alt="Profile Avatar"
+          />
+
+          <div class="profile-info">
+            <p class="section-tag">Profile Summary</p>
+            <h3 id="profileName">No profile selected</h3>
+            <p id="profileUsername" class="username">@search-a-username</p>
+            <p id="profileBio" class="bio">Search a public GitHub username to load profile details and repository insights.</p>
+
+            <div class="profile-meta">
+              <span id="profileLocation"><i class="fa-solid fa-location-dot"></i> Not available</span>
+              <span id="profileCompany"><i class="fa-solid fa-building"></i> Not available</span>
+              <a id="profileBlog" href="#" target="_blank" rel="noopener noreferrer" class="hidden">
+                <i class="fa-solid fa-link"></i> Website
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="score-card card">
+        <p class="section-tag">Profile Score</p>
+        <div class="score-ring" id="scoreRing">
+          <div class="score-center">
+            <span id="healthScore">--</span>
+          </div>
+        </div>
+        <p id="healthRemark" class="score-text">
+          Load a profile to see the score based on public activity, visibility, and repository details.
+        </p>
+      </article>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card card">
+        <div class="stat-top">
+          <span>Repositories</span>
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
+        <h3 id="repoCount">--</h3>
+      </article>
+
+      <article class="stat-card card">
+        <div class="stat-top">
+          <span>Total Stars</span>
+          <i class="fa-solid fa-star"></i>
+        </div>
+        <h3 id="starsCount">--</h3>
+      </article>
+
+      <article class="stat-card card">
+        <div class="stat-top">
+          <span>Total Forks</span>
+          <i class="fa-solid fa-code-fork"></i>
+        </div>
+        <h3 id="forksCount">--</h3>
+      </article>
+
+      <article class="stat-card card">
+        <div class="stat-top">
+          <span>Followers</span>
+          <i class="fa-solid fa-user-group"></i>
+        </div>
+        <h3 id="followersCount">--</h3>
+      </article>
+    </section>
+
+    <section class="equal-grid two-col">
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Language Distribution</p>
+            <h3>Top Languages</h3>
+          </div>
+        </div>
+        <div id="languageChart" class="language-chart">
+          <div class="empty-state">Search a profile to view language distribution.</div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Profile Notes</p>
+            <h3>Key Takeaways</h3>
+          </div>
+        </div>
+
+        <div class="highlight-list">
+          <div class="highlight-item">
+            <span>Best Repository</span>
+            <strong id="bestRepoHighlight">--</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Primary Language</span>
+            <strong id="topLanguageHighlight">--</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Latest Updated Repo</span>
+            <strong id="recentRepoHighlight">--</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="equal-grid two-col">
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Activity</p>
+            <h3>Contribution Graph</h3>
+          </div>
+        </div>
+        <div id="contributionGraph" class="contribution-graph">
+          <div class="empty-state">Search a profile to view contribution activity.</div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Summary</p>
+            <h3>Quick Profile Read</h3>
+          </div>
+        </div>
+        <p id="aiSummary" class="summary-text">Search a profile to generate a quick review.</p>
+      </article>
+    </section>
+
+    <section class="equal-grid three-col">
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Recommended Project</p>
+            <h3>Best Repo to Show</h3>
+          </div>
+        </div>
+        <strong id="bestRepoTitle" class="insight-title">--</strong>
+        <p id="bestRepoReason" class="summary-text">Load a profile to identify the strongest repository to highlight.</p>
+      </article>
+
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Suggestions</p>
+            <h3>Possible Improvements</h3>
+          </div>
+        </div>
+        <ul id="suggestionsList" class="suggestions-list">
+          <li>Search a profile to see practical suggestions based on public repository data.</li>
+        </ul>
+      </article>
+
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Quick Notes</p>
+            <h3>Balanced View</h3>
+          </div>
+        </div>
+
+        <div id="statePanel" class="state-panel">
+          <div class="highlight-item">
+            <span>Overall</span>
+            <strong>This view combines profile activity, repository quality, and public visibility into one simple review.</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Use Case</span>
+            <strong>Useful for checking how a GitHub profile may look in a portfolio or internship context.</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Focus</span>
+            <strong>The goal is clarity: enough insight to be useful, without turning the page into a cluttered dashboard.</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="equal-grid two-col">
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Score Details</p>
+            <h3>Score Breakdown</h3>
+          </div>
+        </div>
+
+        <div class="breakdown-list">
+          <div class="breakdown-item">
+            <div class="breakdown-top">
+              <span>Activity</span>
+              <strong id="activityScore">--</strong>
+            </div>
+            <div class="breakdown-track"><div id="activityBar" class="breakdown-fill"></div></div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-top">
+              <span>Popularity</span>
+              <strong id="popularityScore">--</strong>
+            </div>
+            <div class="breakdown-track"><div id="popularityBar" class="breakdown-fill"></div></div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-top">
+              <span>Documentation</span>
+              <strong id="documentationScore">--</strong>
+            </div>
+            <div class="breakdown-track"><div id="documentationBar" class="breakdown-fill"></div></div>
+          </div>
+
+          <div class="breakdown-item">
+            <div class="breakdown-top">
+              <span>Visibility</span>
+              <strong id="visibilityScore">--</strong>
+            </div>
+            <div class="breakdown-track"><div id="visibilityBar" class="breakdown-fill"></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card section-card">
+        <div class="card-head">
+          <div>
+            <p class="section-tag">Quick Notes</p>
+            <h3>Balanced View</h3>
+          </div>
+        </div>
+
+        <div id="statePanelSecondary" class="state-panel">
+          <div class="highlight-item">
+            <span>Overall</span>
+            <strong>This view combines profile activity, repository quality, and public visibility into one simple review.</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Use Case</span>
+            <strong>Useful for checking how a GitHub profile may look in a portfolio or internship context.</strong>
+          </div>
+          <div class="highlight-item">
+            <span>Focus</span>
+            <strong>The goal is clarity: enough insight to be useful, without turning the page into a cluttered dashboard.</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="repo-section card">
+      <div class="repo-toolbar">
+        <div>
+          <p class="section-tag">Repository Review</p>
+          <h3>Repositories</h3>
+        </div>
+
+        <div class="repo-controls">
+          <select id="sortSelect">
+            <option value="updated">Sort: Recently Updated</option>
+            <option value="stars">Sort: Most Stars</option>
+            <option value="forks">Sort: Most Forks</option>
+            <option value="name">Sort: Name A-Z</option>
+          </select>
+
+          <select id="languageFilter">
+            <option value="all">All Languages</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="repoList" class="repo-list">
+        <div class="empty-state">Search a profile to review repositories.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
