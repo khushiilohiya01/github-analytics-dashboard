@@ -6,8 +6,9 @@ import {
   getTotalStars, getTotalForks, getPrimaryLanguage, getTopRepo, getMostRecentlyUpdatedRepo,
   getBestRepoRecommendation, getBestRepoReason, getAccountAge, calculateBreakdown,
   calculateHealthScore, getHealthRemark, generateAISummary, generateSuggestions,
+  getProfileLevel, getProfileHighlights, getMetricTips,
 } from "../analysis.js";
-import { setScoreRing, setBreakdownUI } from "../ui.js";
+import { setScoreRing, setBreakdownUI, countUp } from "../ui.js";
 import { renderLanguageChart, renderActivityChart } from "./charts.js";
 import { populateLanguageFilter, renderReposSection } from "./repos.js";
 import {
@@ -17,8 +18,10 @@ import {
   healthScore, healthRemark,
   bestRepoHighlight, topLanguageHighlight, recentRepoHighlight, accountAgeHighlight,
   bestRepoTitle, bestRepoReason, aiSummary, suggestionsList, profileActions,
-  body, repoTabCount,
+  body, repoTabCount, profileLevel, profileChips,
 } from "../dom.js";
+
+const IMPACT_LABELS = { high: "High impact", medium: "Medium", low: "Nice to have" };
 
 export function renderProfile({ profile, repos, forkCount, truncated }) {
   state.profile   = profile;
@@ -83,10 +86,10 @@ export function renderProfile({ profile, repos, forkCount, truncated }) {
     profileBlog.classList.add("hidden");
   }
 
-  setText(repoCount,      formatNumber(profile.public_repos || repos.length));
-  setText(starsCount,     formatNumber(totalStars));
-  setText(forksCount,     formatNumber(totalForks));
-  setText(followersCount, formatNumber(profile.followers || 0));
+  countUp(repoCount,      profile.public_repos || repos.length);
+  countUp(starsCount,     totalStars);
+  countUp(forksCount,     totalForks);
+  countUp(followersCount, profile.followers || 0);
 
   if (truncated) {
     repoTruncateWarning.classList.remove("hidden");
@@ -94,15 +97,31 @@ export function renderProfile({ profile, repos, forkCount, truncated }) {
     repoTruncateWarning.classList.add("hidden");
   }
 
-  setText(healthScore, score);
+  countUp(healthScore, score);
   setText(healthRemark, getHealthRemark(score));
   setScoreRing(score);
-  setBreakdownUI(breakdown);
+  setBreakdownUI(breakdown, getMetricTips(breakdown));
 
-  setText(bestRepoHighlight, topRepo ? `${topRepo.name} (${formatNumber(topRepo.stargazers_count)} stars)` : "--");
+  setText(profileLevel, getProfileLevel(score));
+  profileChips.innerHTML = "";
+  getProfileHighlights(profile, repos).forEach(({ type, text }) => {
+    const chip = document.createElement("li");
+    chip.className = `chip chip-${type}`;
+    const icon = document.createElement("i");
+    icon.className = type === "good" ? "fa-solid fa-circle-check" : "fa-solid fa-circle-exclamation";
+    icon.setAttribute("aria-hidden", "true");
+    chip.appendChild(icon);
+    chip.append(` ${text}`);
+    profileChips.appendChild(chip);
+  });
+
+  const starredRepo = topRepo && topRepo.stargazers_count > 0 ? topRepo : null;
+  setText(bestRepoHighlight, starredRepo
+    ? `${starredRepo.name} · ${formatNumber(starredRepo.stargazers_count)} ★`
+    : "No starred repos yet");
   setText(topLanguageHighlight, primaryLang);
   setText(recentRepoHighlight, recentRepo ? `${recentRepo.name} · ${formatDate(lastActivity(recentRepo))}` : "--");
-  setText(accountAgeHighlight, age || "--");
+  setText(accountAgeHighlight, age ? age.replace("Member for ", "") : "--");
 
   setText(bestRepoTitle, bestRepo ? bestRepo.name : "--");
   setText(bestRepoReason, bestRepo ? getBestRepoReason(bestRepo) : "--");
@@ -111,9 +130,26 @@ export function renderProfile({ profile, repos, forkCount, truncated }) {
 
   // XSS-safe suggestions — use DOM, not innerHTML with user data
   suggestionsList.innerHTML = "";
-  suggestions.forEach((item) => {
+  suggestions.forEach(({ impact, title, detail }) => {
     const li = document.createElement("li");
-    li.textContent = item;
+    li.className = `step step-${impact}`;
+    li.dataset.text = `${title}: ${detail}`;
+
+    const head = document.createElement("div");
+    head.className = "step-head";
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    const badge = document.createElement("span");
+    badge.className = "impact-badge";
+    badge.textContent = IMPACT_LABELS[impact];
+    head.appendChild(strong);
+    head.appendChild(badge);
+
+    const p = document.createElement("p");
+    p.textContent = detail;
+
+    li.appendChild(head);
+    li.appendChild(p);
     suggestionsList.appendChild(li);
   });
 
@@ -138,7 +174,7 @@ export function buildSummaryText() {
     "DevScope Summary",
     "",
     `Profile: ${profileName.textContent} (${profileUsername.textContent})`,
-    `Profile Score: ${healthScore.textContent}`,
+    `Profile Score: ${healthScore.textContent} (${profileLevel.textContent})`,
     `Repositories: ${repoCount.textContent}`,
     `Stars: ${starsCount.textContent}`,
     `Forks: ${forksCount.textContent}`,
@@ -158,6 +194,6 @@ export function buildSummaryText() {
     "Possible Improvements:"
   ];
 
-  suggestionsList.querySelectorAll("li").forEach((li) => lines.push(`- ${li.textContent}`));
+  suggestionsList.querySelectorAll("li").forEach((li) => lines.push(`- ${li.dataset.text || li.textContent}`));
   return lines.join("\n");
 }
