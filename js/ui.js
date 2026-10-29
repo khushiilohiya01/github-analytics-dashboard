@@ -13,8 +13,27 @@ import {
   activityScore, popularityScore, documentationScore, visibilityScore,
   activityBar, popularityBar, documentationBar, visibilityBar,
   languageChart, contributionGraph, repoList, repoCountLabel, repoTruncateWarning,
-  body, repoTabCount,
+  body, repoTabCount, profileLevel, profileChips, activitySummary, metricTiles,
 } from "./dom.js";
+
+const STATUS_LABELS = { good: "Strong", ok: "Fair", low: "Needs work" };
+
+// Animate a number from 0 up to its value; falls back to setting it directly
+export function countUp(el, target, format = (n) => n.toLocaleString(), duration = 800) {
+  const value = Number(target) || 0;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || value === 0) {
+    el.textContent = format(value);
+    return;
+  }
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = format(Math.round(value * eased));
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 
 // ─── Messages ────────────────────────────────────────────────────────────────
 
@@ -57,13 +76,22 @@ export function setScoreRing(score) {
   scoreRing.style.setProperty("--score-angle", `${angle}deg`);
 }
 
-export function setBreakdownUI(breakdown) {
+// Fills the four metric tiles; `tips` (from getMetricTips) adds status and advice
+export function setBreakdownUI(breakdown, tips = {}) {
   const keys = ["activity", "popularity", "documentation", "visibility"];
   const scoreEls = { activity: activityScore, popularity: popularityScore, documentation: documentationScore, visibility: visibilityScore };
   const barEls   = { activity: activityBar,   popularity: popularityBar,   documentation: documentationBar,   visibility: visibilityBar };
   keys.forEach((k) => {
-    setText(scoreEls[k], breakdown[k] === null ? "--" : breakdown[k]);
+    if (typeof breakdown[k] === "number" && tips[k]) countUp(scoreEls[k], breakdown[k]);
+    else setText(scoreEls[k], breakdown[k] === null ? "--" : breakdown[k]);
     barEls[k].style.width = `${breakdown[k] || 0}%`;
+  });
+
+  metricTiles.forEach((tile) => {
+    const info = tips[tile.dataset.metric];
+    tile.dataset.status = info ? info.status : "";
+    setText(tile.querySelector(".metric-status"), info ? STATUS_LABELS[info.status] : "");
+    setText(tile.querySelector(".metric-tip"), info ? info.tip : "");
   });
 }
 
@@ -97,6 +125,9 @@ export function resetDashboardToEmpty() {
   setText(healthRemark,  "Load a profile to see the score based on public activity, visibility, and repository details.");
   setText(bestRepoReason,"Load a profile to identify the strongest repository to highlight.");
   setText(aiSummary,     "Search a profile to generate a quick review.");
+  setText(profileLevel,  "--");
+  profileChips.innerHTML = "";
+  setText(activitySummary, "Repos by month of last push");
 
   suggestionsList.innerHTML = "<li>Search a profile to see practical suggestions based on public repository data.</li>";
   setScoreRing(null);
@@ -134,6 +165,8 @@ export function setLoadingUI() {
   setText(bestRepoTitle,  "Loading…");
   setText(bestRepoReason, "Finding the strongest project…");
   setText(aiSummary,      "Preparing summary…");
+  setText(profileLevel,   "…");
+  profileChips.innerHTML = "";
   suggestionsList.innerHTML = "<li>Preparing suggestions…</li>";
 
   setBreakdownUI({ activity: 0, popularity: 0, documentation: 0, visibility: 0 });

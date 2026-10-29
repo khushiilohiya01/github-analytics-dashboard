@@ -120,6 +120,9 @@ export function generateAISummary(profile, repos, score) {
   return `${profile.name || profile.login} has ${repoTotal} public repositories and works mostly with ${lang}. ${age ? age + ". " : ""}Profile score: ${score}/100. ${active >= 3 ? "Visible recent activity across the profile." : "Recent public activity looks limited."} ${bestRepo ? `${bestRepo.name} is the strongest repository to highlight.` :"A stronger standout project would improve the overall profile."}`;
 }
 
+const IMPACT_ORDER = { high: 0, medium: 1, low: 2 };
+
+// Concrete next steps, most impactful first
 export function generateSuggestions(profile, repos) {
   const suggestions    = [];
   const stars          = getTotalStars(repos);
@@ -127,21 +130,127 @@ export function generateSuggestions(profile, repos) {
   const described      = repos.filter((r) => r.description && r.description.trim()).length;
   const languageCount  = getLanguageData(repos).length;
   const followers      = profile.followers || 0;
+  const bestRepo       = getBestRepoRecommendation(repos);
 
-  if (active <= 1 && repos.length > 0)
-    suggestions.push("Update a few repositories more regularly so the profile feels more active.");
-  if (described < Math.ceil(repos.length * 0.5))
-    suggestions.push("Add descriptions to more repositories so visitors understand the work at a glance.");
   if (stars < 30)
-    suggestions.push("One polished flagship project could make the profile much more memorable.");
-  if (languageCount <= 1 && repos.length >= 4)
-    suggestions.push("A little more project variety would make the profile feel more rounded.");
+    suggestions.push({
+      impact: "high",
+      title: "Polish one flagship project",
+      detail: bestRepo
+        ? `Give ${bestRepo.name} a README with screenshots and a live demo link, then share it.`
+        : "Build one project you're proud of and give it a clear README with screenshots.",
+    });
+  if (repos.length && described < Math.ceil(repos.length * 0.5))
+    suggestions.push({
+      impact: "high",
+      title: "Describe your repositories",
+      detail: `${repos.length - described} of ${repos.length} repos have no description. One sentence each helps visitors understand your work.`,
+    });
+  if (active <= 1 && repos.length > 0)
+    suggestions.push({
+      impact: "medium",
+      title: "Push updates more regularly",
+      detail: `${active === 0 ? "No repos were" : "Only 1 repo was"} pushed in the last 60 days. Small, regular commits show you're active.`,
+    });
   if (followers < 20)
-    suggestions.push("Pinning stronger work and sharing projects could improve profile visibility.");
+    suggestions.push({
+      impact: "medium",
+      title: "Pin your best work",
+      detail: "Pin up to 6 repos on your GitHub profile and add a profile README so visitors know where to start.",
+    });
+  if (languageCount <= 1 && repos.length >= 4)
+    suggestions.push({
+      impact: "low",
+      title: "Show some range",
+      detail: "A project in a second language or framework makes the profile feel more rounded.",
+    });
   if (!suggestions.length)
-    suggestions.push("Profile already looks solid. The next step is making one project especially stand out.");
+    suggestions.push({
+      impact: "low",
+      title: "Keep the momentum",
+      detail: "The profile already looks solid. Next, make one project stand out with a demo and a write-up.",
+    });
 
-  return suggestions.slice(0, 4);
+  return suggestions.sort((a, b) => IMPACT_ORDER[a.impact] - IMPACT_ORDER[b.impact]).slice(0, 4);
+}
+
+export function getProfileLevel(score) {
+  if (score >= 85) return "Standout";
+  if (score >= 70) return "Strong";
+  if (score >= 55) return "Rising";
+  if (score >= 35) return "Growing";
+  return "Getting started";
+}
+
+// Short strength / weak-spot chips for the summary card
+export function getProfileHighlights(profile, repos) {
+  const good = [];
+  const warn = [];
+  const stars         = getTotalStars(repos);
+  const active        = getActiveRepos(repos);
+  const languageCount = getLanguageData(repos).filter((l) => l.name !== "Other").length;
+  const followers     = profile.followers || 0;
+  const described     = repos.filter((r) => r.description && r.description.trim()).length;
+  const docRatio      = repos.length ? described / repos.length : 0;
+  const years         = Math.floor(daysSince(profile.created_at) / 365);
+
+  if (active >= 3) good.push(`${active} repos active recently`);
+  else if (active >= 1) good.push("Pushed recently");
+  if (stars >= 10) good.push(`${formatNumber(stars)} stars earned`);
+  if (docRatio >= 0.7 && repos.length) good.push("Well documented");
+  if (languageCount >= 3) good.push(`Works in ${languageCount} languages`);
+  if (followers >= 50) good.push(`${formatNumber(followers)} followers`);
+  if (years >= 5 && profile.created_at) good.push(`${years} years on GitHub`);
+
+  if (!repos.length) warn.push("No original repos yet");
+  else {
+    if (stars === 0) warn.push("No stars yet");
+    if (docRatio < 0.5) warn.push("Few descriptions");
+    if (active === 0) warn.push("No recent pushes");
+  }
+  if (followers < 10) warn.push("Small audience");
+
+  return [
+    ...good.slice(0, 3).map((text) => ({ type: "good", text })),
+    ...warn.slice(0, 3).map((text) => ({ type: "warn", text })),
+  ];
+}
+
+export function getMetricStatus(value) {
+  if (value >= 70) return "good";
+  if (value >= 40) return "ok";
+  return "low";
+}
+
+// One tip per score metric, matched to how it's doing
+export function getMetricTips(breakdown) {
+  const tips = {
+    activity: {
+      good: "Plenty of recent pushes. Keep it up.",
+      ok:   "Some recent activity. A few more regular pushes would lift this.",
+      low:  "Few repos pushed in the last 60 days. Small, regular commits help.",
+    },
+    popularity: {
+      good: "Your work is getting noticed.",
+      ok:   "Some traction. Sharing your best repo could push this further.",
+      low:  "Add a README and demo to your best repo, then share it.",
+    },
+    documentation: {
+      good: "Most repos explain what they are.",
+      ok:   "About half your repos have descriptions. Fill in the rest.",
+      low:  "Most repos have no description. One sentence each makes a difference.",
+    },
+    visibility: {
+      good: "Good reach for your profile.",
+      ok:   "Growing reach. Pinning your best repos helps visitors.",
+      low:  "Pin your best repos and add a profile README.",
+    },
+  };
+
+  return Object.fromEntries(Object.keys(tips).map((key) => {
+    const status = getMetricStatus(breakdown[key]);
+    return [key, { status, tip: tips[key][status] }];
+  }));
 }
 
 export function getCompareValues({ profile, repos }) {

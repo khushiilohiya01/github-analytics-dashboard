@@ -11,53 +11,49 @@ import {
 import { renderProfile, buildSummaryText } from "./render/profile.js";
 import { renderReposSection } from "./render/repos.js";
 import { createCompareCards } from "./render/compare.js";
+import { initScrollUI } from "./scroll.js";
 import {
   body, themeToggle, usernameInput, compareUser1, compareUser2, analyzeBtn, compareBtn,
   copySummaryBtn, exportSummaryBtn, shareBtn, rateLimitNotice, profileBio,
   compareSection, compareGrid, sortSelect, languageFilter,
-  recentSearchesContainer, clearRecentBtn, viewButtons, tabButtons, tabPanels,
+  recentSearchesContainer, clearRecentBtn, viewButtons, tickerTrack,
 } from "./dom.js";
 
-// ─── Views (Analyze / Compare) and dashboard tabs ────────────────────────────
+// Shown in the landing ticker alongside the user's own recent searches
+const TICKER_DEFAULTS = ["torvalds", "gaearon", "sindresorhus", "yyx990803", "tj", "addyosmani", "kentcdodds", "mojombo"];
+
+// ─── Views (Analyze / Compare) ───────────────────────────────────────────────
 
 function setView(view) {
   body.dataset.view = view;
   viewButtons.forEach((btn) => {
     const active = btn.dataset.viewBtn === view;
     btn.classList.toggle("is-active", active);
-    btn.setAttribute("aria-selected", String(active));
+    btn.setAttribute("aria-pressed", String(active));
   });
   (view === "compare" ? compareUser1 : usernameInput).focus();
 }
 
-function setTab(tab) {
-  tabButtons.forEach((btn) => {
-    const active = btn.dataset.tab === tab;
-    btn.classList.toggle("is-active", active);
-    btn.setAttribute("aria-selected", String(active));
-  });
-  tabPanels.forEach((panel) => { panel.hidden = panel.dataset.panel !== tab; });
-}
-
 viewButtons.forEach((btn) => btn.addEventListener("click", () => setView(btn.dataset.viewBtn)));
-tabButtons.forEach((btn) => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
 
 // ─── Theme ───────────────────────────────────────────────────────────────────
 
+// Paper (light) is the default; the icon shows the theme you'd switch to
+function syncThemeIcon() {
+  themeToggle.querySelector("i").className = body.classList.contains("light-mode")
+    ? "fa-solid fa-moon"
+    : "fa-solid fa-sun";
+}
+
 themeToggle.addEventListener("click", () => {
   body.classList.toggle("light-mode");
-  const icon = themeToggle.querySelector("i");
-  icon.className = body.classList.contains("light-mode")
-    ? "fa-solid fa-sun"
-    : "fa-solid fa-moon";
+  syncThemeIcon();
   saveTheme(body.classList.contains("light-mode") ? "light" : "dark");
 });
 
 function initTheme() {
-  if (readTheme() === "light") {
-    body.classList.add("light-mode");
-    themeToggle.querySelector("i").className = "fa-solid fa-sun";
-  }
+  if (readTheme() === "dark") body.classList.remove("light-mode");
+  syncThemeIcon();
 }
 
 // ─── Search / Compare events ─────────────────────────────────────────────────
@@ -142,8 +138,32 @@ shareBtn.addEventListener("click", async () => {
 
 // ─── Recent searches ─────────────────────────────────────────────────────────
 
+function renderTicker() {
+  const names = [...new Set([...readRecentSearches(), ...TICKER_DEFAULTS])].slice(0, 10);
+  tickerTrack.innerHTML = "";
+  // Two copies so the marquee loops seamlessly; the second is hidden from assistive tech
+  [false, true].forEach((isCopy) => {
+    names.forEach((name) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ticker-item";
+      btn.textContent = `@${name}`;
+      if (isCopy) {
+        btn.setAttribute("aria-hidden", "true");
+        btn.tabIndex = -1;
+      }
+      btn.addEventListener("click", () => {
+        usernameInput.value = name;
+        loadGitHubUser(name);
+      });
+      tickerTrack.appendChild(btn);
+    });
+  });
+}
+
 function renderRecentSearches() {
   const searches = readRecentSearches();
+  renderTicker();
 
   recentSearchesContainer.innerHTML = "";
   if (!searches.length) {
@@ -207,7 +227,6 @@ async function loadGitHubUser(username) {
   try {
     const data = await fetchGitHubProfile(username);
     if (requestId !== state.loadRequestId) return;
-    setTab("overview");
     renderProfile(data);
     addRecentSearch(data.profile.login || username);
     renderRecentSearches();
@@ -230,6 +249,7 @@ async function loadGitHubUser(username) {
 
 function init() {
   initTheme();
+  initScrollUI();
   resetDashboardToEmpty();
   renderRecentSearches();
 

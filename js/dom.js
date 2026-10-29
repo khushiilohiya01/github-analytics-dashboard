@@ -51,6 +51,11 @@ export const bestRepoReason       = document.getElementById("bestRepoReason");
 export const aiSummary            = document.getElementById("aiSummary");
 export const suggestionsList      = document.getElementById("suggestionsList");
 
+export const profileLevel         = document.getElementById("profileLevel");
+export const profileChips         = document.getElementById("profileChips");
+export const activitySummary      = document.getElementById("activitySummary");
+export const metricTiles          = document.querySelectorAll("[data-metric]");
+
 export const activityScore        = document.getElementById("activityScore");
 export const popularityScore      = document.getElementById("popularityScore");
 export const documentationScore   = document.getElementById("documentationScore");
@@ -62,8 +67,13 @@ export const visibilityBar        = document.getElementById("visibilityBar");
 
 export const repoTabCount         = document.getElementById("repoTabCount");
 export const viewButtons          = document.querySelectorAll("[data-view-btn]");
-export const tabButtons           = document.querySelectorAll("[data-tab]");
-export const tabPanels            = document.querySelectorAll("[data-panel]");
+
+export const readProgress         = document.getElementById("readProgress");
+export const chapterNav           = document.querySelector(".chapters");
+export const chapterLinks         = document.querySelectorAll(".chapter-link");
+export const chapterSections      = [...document.querySelectorAll(".chapter")];
+export const tickerTrack          = document.getElementById("tickerTrack");
+export const backTop              = document.getElementById("backTop");
 
 export const repoList             = document.getElementById("repoList");
 export const repoCountLabel       = document.getElementById("repoCountLabel");

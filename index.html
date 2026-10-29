@@ -6,261 +6,248 @@
   <title>DevScope | GitHub Profile Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body data-view="analyze">
-  <div class="backdrop" aria-hidden="true"></div>
+<body data-view="analyze" class="light-mode">
+  <div class="read-progress" aria-hidden="true"><span id="readProgress"></span></div>
 
-  <header class="nav">
-    <div class="shell nav-inner">
-      <a class="brand" href="./" aria-label="DevScope home">
-        <span class="brand-mark"><i class="fa-brands fa-github" aria-hidden="true"></i></span>
-        <span class="brand-name">DevScope</span>
-      </a>
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <a class="wordmark" href="./" aria-label="DevScope home">Dev<em>Scope</em></a>
 
-      <div class="mode-switch" role="tablist" aria-label="Mode">
-        <button type="button" class="mode-btn is-active" data-view-btn="analyze" role="tab" aria-selected="true">
-          <i class="fa-solid fa-user" aria-hidden="true"></i> Analyze
-        </button>
-        <button type="button" class="mode-btn" data-view-btn="compare" role="tab" aria-selected="false">
-          <i class="fa-solid fa-code-compare" aria-hidden="true"></i> Compare
-        </button>
-      </div>
+      <nav class="mode-links" aria-label="Mode">
+        <button type="button" class="mode-link is-active" data-view-btn="analyze" aria-pressed="true">Analyze</button>
+        <button type="button" class="mode-link" data-view-btn="compare" aria-pressed="false">Compare</button>
+      </nav>
 
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
         <i class="fa-solid fa-moon"></i>
       </button>
     </div>
   </header>
 
-  <main class="shell">
-    <!-- Search: a large hero before a profile loads, a compact bar after -->
-    <section class="search-hero">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="pulse-dot"></span> GitHub profile analytics</p>
-        <h1 class="view-analyze-only">Understand any GitHub profile <span class="grad-text">in seconds</span></h1>
-        <h1 class="view-compare-only">Put two developers <span class="grad-text">side by side</span></h1>
-        <p class="hero-sub">
-          Repository health, language mix, recent activity and a profile score, all from public data.
-        </p>
+  <main>
+    <!-- Search: a full cover before a profile loads, a slim bar after -->
+    <section class="cover wrap">
+      <div class="cover-copy">
+        <p class="kicker"><span class="kicker-rule"></span> GitHub profile review · Issue Nº 1</p>
+        <h1 class="view-analyze-only">Read any GitHub profile <em>like a story.</em></h1>
+        <h1 class="view-compare-only">Two developers, <em>one page.</em></h1>
+        <p class="dek">Score, activity, languages and the next steps that matter, written up from public data in a few seconds.</p>
       </div>
 
-      <div class="search-bar view-analyze-only" id="searchForm">
-        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input type="text" id="usernameInput" placeholder="Enter a GitHub username, e.g. torvalds" autocomplete="off" spellcheck="false" />
-        <button type="button" id="analyzeBtn" class="btn-primary">Analyze</button>
+      <div class="search-line view-analyze-only" id="searchForm">
+        <label for="usernameInput" class="search-at">@</label>
+        <input type="text" id="usernameInput" placeholder="github-username" autocomplete="off" spellcheck="false" />
+        <button type="button" id="analyzeBtn" class="go-btn">Analyze <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
       </div>
 
-      <div class="search-bar compare-bar view-compare-only" id="compareForm">
-        <i class="fa-solid fa-user" aria-hidden="true"></i>
-        <input type="text" id="compareUser1" placeholder="First username" autocomplete="off" spellcheck="false" />
-        <span class="vs-chip" aria-hidden="true">vs</span>
-        <input type="text" id="compareUser2" placeholder="Second username" autocomplete="off" spellcheck="false" />
-        <button type="button" id="compareBtn" class="btn-primary">Compare</button>
+      <div class="search-line compare-line view-compare-only" id="compareForm">
+        <label for="compareUser1" class="search-at">@</label>
+        <input type="text" id="compareUser1" placeholder="first-user" autocomplete="off" spellcheck="false" />
+        <span class="vs-word" aria-hidden="true">vs.</span>
+        <label for="compareUser2" class="search-at">@</label>
+        <input type="text" id="compareUser2" placeholder="second-user" autocomplete="off" spellcheck="false" />
+        <button type="button" id="compareBtn" class="go-btn">Compare <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
       </div>
 
-      <div class="recent-row view-analyze-only">
-        <span class="recent-label">Recent</span>
+      <div class="recent-line view-analyze-only">
+        <span class="mono-label">Recently read</span>
         <div id="recentSearches" class="recent-searches"></div>
-        <button type="button" id="clearRecentBtn" class="link-btn">Clear</button>
+        <button type="button" id="clearRecentBtn" class="text-btn">clear</button>
       </div>
 
-      <ul class="feature-row">
-        <li><i class="fa-solid fa-gauge-high" aria-hidden="true"></i> Profile score</li>
-        <li><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Activity &amp; languages</li>
-        <li><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Practical suggestions</li>
-      </ul>
+      <ol class="cover-index">
+        <li><span>01</span> A profile score with the reasons behind it</li>
+        <li><span>02</span> Activity, languages and your strongest project</li>
+        <li><span>03</span> Concrete next steps, most impactful first</li>
+      </ol>
     </section>
 
-    <div id="rateLimitNotice" class="notice hidden">
+    <!-- Scrolling ticker of usernames to try -->
+    <div class="ticker cover-only" aria-label="Try a profile">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+    <div id="rateLimitNotice" class="notice wrap hidden">
       <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
       GitHub's unauthenticated API allows 60 requests per hour. Each profile uses 2, a comparison uses 4.
     </div>
 
     <!-- Compare view -->
-    <section id="compareSection" class="compare-section view-compare-only hidden">
+    <section id="compareSection" class="compare-section wrap view-compare-only hidden">
       <div id="compareGrid" class="compare-grid"></div>
     </section>
 
-    <!-- Analyze view: dashboard, shown once a profile is loading or loaded -->
-    <div id="dashboard" class="dashboard view-analyze-only">
-      <section class="profile-hero">
-        <div class="profile-main">
-          <div class="avatar-wrap">
-            <img id="profileAvatar" alt="" />
-          </div>
-          <div class="profile-info">
-            <h2 id="profileName">No profile selected</h2>
-            <p id="profileUsername" class="username">@search-a-username</p>
-            <p id="profileBio" class="bio">Search a public GitHub username to load profile details and repository insights.</p>
-            <div class="profile-meta">
-              <span id="profileLocation"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Not available</span>
-              <span id="profileCompany"><i class="fa-solid fa-building" aria-hidden="true"></i> Not available</span>
-              <span id="profileJoined" class="hidden"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <span id="profileJoinedText"></span></span>
-              <a id="profileBlog" href="#" target="_blank" rel="noopener noreferrer" class="hidden">
-                <i class="fa-solid fa-link" aria-hidden="true"></i> Website
-              </a>
-            </div>
-            <div id="profileActions" class="profile-actions hidden">
-              <button type="button" id="copySummaryBtn" class="ghost-btn">
-                <i class="fa-regular fa-copy" aria-hidden="true"></i> Copy summary
-              </button>
-              <button type="button" id="exportSummaryBtn" class="ghost-btn">
-                <i class="fa-solid fa-download" aria-hidden="true"></i> Export
-              </button>
-              <button type="button" id="shareBtn" class="ghost-btn">
-                <i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="score-block">
-          <div class="score-ring" id="scoreRing">
-            <div class="score-center">
-              <span id="healthScore">--</span>
-              <small>/ 100</small>
-            </div>
-          </div>
-          <p id="healthRemark" class="score-text">
-            Load a profile to see the score based on public activity, visibility, and repository details.
-          </p>
-        </div>
-      </section>
-
-      <section class="stat-strip">
-        <div class="stat">
-          <span class="stat-label"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Repositories</span>
-          <strong id="repoCount">--</strong>
-        </div>
-        <div class="stat">
-          <span class="stat-label"><i class="fa-solid fa-star" aria-hidden="true"></i> Stars</span>
-          <strong id="starsCount">--</strong>
-        </div>
-        <div class="stat">
-          <span class="stat-label"><i class="fa-solid fa-code-fork" aria-hidden="true"></i> Forks</span>
-          <strong id="forksCount">--</strong>
-        </div>
-        <div class="stat">
-          <span class="stat-label"><i class="fa-solid fa-user-group" aria-hidden="true"></i> Followers</span>
-          <strong id="followersCount">--</strong>
-        </div>
-      </section>
-
-      <nav class="tabs" role="tablist" aria-label="Dashboard sections">
-        <button type="button" class="tab is-active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
-        <button type="button" class="tab" data-tab="repos" role="tab" aria-selected="false">
-          Repositories <span id="repoTabCount" class="tab-count"></span>
-        </button>
+    <!-- Analyze view: the profile "article" -->
+    <div id="dashboard" class="dashboard wrap view-analyze-only">
+      <nav class="chapters" aria-label="Sections">
+        <a href="#ch-profile" class="chapter-link is-active"><span>01</span> Profile</a>
+        <a href="#ch-score" class="chapter-link"><span>02</span> Score</a>
+        <a href="#ch-steps" class="chapter-link"><span>03</span> Next steps</a>
+        <a href="#ch-activity" class="chapter-link"><span>04</span> Activity</a>
+        <a href="#ch-stack" class="chapter-link"><span>05</span> Stack</a>
+        <a href="#ch-repos" class="chapter-link"><span>06</span> Repos <em id="repoTabCount" class="chapter-count"></em></a>
       </nav>
 
-      <!-- Overview tab -->
-      <div class="tab-panel" data-panel="overview" role="tabpanel">
-        <div class="insight-band">
-          <div class="insight">
-            <span class="insight-icon"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i></span>
-            <div>
-              <h3>Quick read</h3>
-              <p id="aiSummary" class="summary-text">Search a profile to generate a quick review.</p>
+      <article class="article">
+        <!-- 01 Profile -->
+        <section id="ch-profile" class="chapter profile-chapter" data-reveal>
+          <div class="byline">
+            <div class="avatar-frame">
+              <img id="profileAvatar" alt="" />
+            </div>
+            <div class="byline-text">
+              <p class="mono-label">The developer</p>
+              <h2 id="profileName">No profile selected</h2>
+              <p id="profileUsername" class="handle">@search-a-username</p>
+              <p id="profileBio" class="bio">Search a public GitHub username to load profile details and repository insights.</p>
+              <div class="profile-meta">
+                <span id="profileLocation"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Not available</span>
+                <span id="profileCompany"><i class="fa-solid fa-building" aria-hidden="true"></i> Not available</span>
+                <span id="profileJoined" class="hidden"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <span id="profileJoinedText"></span></span>
+                <a id="profileBlog" href="#" target="_blank" rel="noopener noreferrer" class="hidden">
+                  <i class="fa-solid fa-link" aria-hidden="true"></i> Website
+                </a>
+              </div>
+              <div id="profileActions" class="profile-actions hidden">
+                <button type="button" id="copySummaryBtn" class="text-action"><i class="fa-regular fa-copy" aria-hidden="true"></i> Copy summary</button>
+                <button type="button" id="exportSummaryBtn" class="text-action"><i class="fa-solid fa-download" aria-hidden="true"></i> Export</button>
+                <button type="button" id="shareBtn" class="text-action"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Share</button>
+              </div>
             </div>
           </div>
-          <div class="insight">
-            <span class="insight-icon trophy"><i class="fa-solid fa-trophy" aria-hidden="true"></i></span>
-            <div>
-              <h3>Best repo to show: <strong id="bestRepoTitle" class="insight-title">--</strong></h3>
-              <p id="bestRepoReason" class="summary-text">Load a profile to identify the strongest repository to highlight.</p>
+
+          <div class="verdict">
+            <div class="score-ring" id="scoreRing">
+              <div class="score-center">
+                <span id="healthScore">--</span>
+                <small>/100</small>
+              </div>
+            </div>
+            <p class="level-line"><em id="profileLevel">--</em></p>
+            <p id="healthRemark" class="remark">Load a profile to see the score based on public activity, visibility, and repository details.</p>
+          </div>
+
+          <dl class="figures">
+            <div><dt>Repositories</dt><dd id="repoCount">--</dd></div>
+            <div><dt>Stars</dt><dd id="starsCount">--</dd></div>
+            <div><dt>Forks</dt><dd id="forksCount">--</dd></div>
+            <div><dt>Followers</dt><dd id="followersCount">--</dd></div>
+          </dl>
+
+          <blockquote class="pull-quote">
+            <p id="aiSummary">Search a profile to generate a quick review.</p>
+            <ul id="profileChips" class="tags"></ul>
+          </blockquote>
+        </section>
+
+        <!-- 02 Score -->
+        <section id="ch-score" class="chapter" data-reveal>
+          <header class="chapter-head">
+            <span class="chapter-no">02</span>
+            <h3>The score, <em>broken down</em></h3>
+            <p class="chapter-note">Hover a figure to see how it's measured</p>
+          </header>
+          <div class="metric-row">
+            <article class="metric" data-metric="activity" title="Share of repos pushed to in the last 60 days">
+              <p class="mono-label"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Activity</p>
+              <strong id="activityScore" class="metric-value">--</strong>
+              <div class="breakdown-track"><div id="activityBar" class="breakdown-fill"></div></div>
+              <p class="metric-status"></p>
+              <p class="metric-tip"></p>
+            </article>
+            <article class="metric" data-metric="popularity" title="Based on total stars and forks across repos">
+              <p class="mono-label"><i class="fa-solid fa-star" aria-hidden="true"></i> Popularity</p>
+              <strong id="popularityScore" class="metric-value">--</strong>
+              <div class="breakdown-track"><div id="popularityBar" class="breakdown-fill"></div></div>
+              <p class="metric-status"></p>
+              <p class="metric-tip"></p>
+            </article>
+            <article class="metric" data-metric="documentation" title="Share of repos that have a description">
+              <p class="mono-label"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Docs</p>
+              <strong id="documentationScore" class="metric-value">--</strong>
+              <div class="breakdown-track"><div id="documentationBar" class="breakdown-fill"></div></div>
+              <p class="metric-status"></p>
+              <p class="metric-tip"></p>
+            </article>
+            <article class="metric" data-metric="visibility" title="Based on followers and number of public repos">
+              <p class="mono-label"><i class="fa-solid fa-eye" aria-hidden="true"></i> Visibility</p>
+              <strong id="visibilityScore" class="metric-value">--</strong>
+              <div class="breakdown-track"><div id="visibilityBar" class="breakdown-fill"></div></div>
+              <p class="metric-status"></p>
+              <p class="metric-tip"></p>
+            </article>
+          </div>
+        </section>
+
+        <!-- 03 Next steps -->
+        <section id="ch-steps" class="chapter" data-reveal>
+          <header class="chapter-head">
+            <span class="chapter-no">03</span>
+            <h3>What to do <em>next</em></h3>
+            <p class="chapter-note">Most impactful first</p>
+          </header>
+          <ol id="suggestionsList" class="steps-list">
+            <li>Search a profile to see practical suggestions based on public repository data.</li>
+          </ol>
+        </section>
+
+        <!-- 04 Activity -->
+        <section id="ch-activity" class="chapter" data-reveal>
+          <header class="chapter-head">
+            <span class="chapter-no">04</span>
+            <h3>A year of <em>pushes</em></h3>
+            <p id="activitySummary" class="chapter-note">Repos by month of last push</p>
+          </header>
+          <div id="contributionGraph" class="contribution-graph">
+            <div class="empty-state">Search a profile to view repo activity.</div>
+          </div>
+        </section>
+
+        <!-- 05 Stack -->
+        <section id="ch-stack" class="chapter" data-reveal>
+          <header class="chapter-head">
+            <span class="chapter-no">05</span>
+            <h3>Stack &amp; <em>standouts</em></h3>
+          </header>
+          <div class="stack-cols">
+            <div class="stack-col spotlight">
+              <p class="mono-label"><i class="fa-solid fa-trophy" aria-hidden="true"></i> Strongest project</p>
+              <strong id="bestRepoTitle" class="spotlight-title">--</strong>
+              <p id="bestRepoReason" class="body-small">Load a profile to identify the strongest repository to highlight.</p>
+            </div>
+            <div class="stack-col">
+              <p class="mono-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Languages</p>
+              <div id="languageChart" class="language-chart">
+                <div class="empty-state">Search a profile to view language distribution.</div>
+              </div>
+            </div>
+            <div class="stack-col">
+              <p class="mono-label"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i> Highlights</p>
+              <dl class="highlights">
+                <div><dt>Most starred</dt><dd id="bestRepoHighlight">--</dd></div>
+                <div><dt>Main language</dt><dd id="topLanguageHighlight">--</dd></div>
+                <div><dt>Latest push</dt><dd id="recentRepoHighlight">--</dd></div>
+                <div><dt>On GitHub</dt><dd id="accountAgeHighlight">--</dd></div>
+              </dl>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="overview-grid">
-          <section class="block block-wide">
-            <header class="block-head">
-              <h3>Repos by last push</h3>
-              <span class="block-hint">Past 12 months</span>
-            </header>
-            <div id="contributionGraph" class="contribution-graph">
-              <div class="empty-state">Search a profile to view repo activity.</div>
-            </div>
-          </section>
-
-          <section class="block">
-            <header class="block-head">
-              <h3>Score breakdown</h3>
-            </header>
-            <div class="breakdown-list">
-              <div class="breakdown-item">
-                <div class="breakdown-top">
-                  <span>Activity <em class="breakdown-hint">repos pushed to in last 60 days</em></span>
-                  <strong id="activityScore">--</strong>
-                </div>
-                <div class="breakdown-track"><div id="activityBar" class="breakdown-fill"></div></div>
-              </div>
-              <div class="breakdown-item">
-                <div class="breakdown-top">
-                  <span>Popularity <em class="breakdown-hint">stars and forks</em></span>
-                  <strong id="popularityScore">--</strong>
-                </div>
-                <div class="breakdown-track"><div id="popularityBar" class="breakdown-fill"></div></div>
-              </div>
-              <div class="breakdown-item">
-                <div class="breakdown-top">
-                  <span>Documentation <em class="breakdown-hint">repos with descriptions</em></span>
-                  <strong id="documentationScore">--</strong>
-                </div>
-                <div class="breakdown-track"><div id="documentationBar" class="breakdown-fill"></div></div>
-              </div>
-              <div class="breakdown-item">
-                <div class="breakdown-top">
-                  <span>Visibility <em class="breakdown-hint">followers and public repos</em></span>
-                  <strong id="visibilityScore">--</strong>
-                </div>
-                <div class="breakdown-track"><div id="visibilityBar" class="breakdown-fill"></div></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="block">
-            <header class="block-head">
-              <h3>Languages</h3>
-            </header>
-            <div id="languageChart" class="language-chart">
-              <div class="empty-state">Search a profile to view language distribution.</div>
-            </div>
-          </section>
-
-          <section class="block">
-            <header class="block-head">
-              <h3>Key takeaways</h3>
-            </header>
-            <dl class="takeaways">
-              <div><dt>Most starred repo</dt><dd id="bestRepoHighlight">--</dd></div>
-              <div><dt>Primary language</dt><dd id="topLanguageHighlight">--</dd></div>
-              <div><dt>Latest pushed repo</dt><dd id="recentRepoHighlight">--</dd></div>
-              <div><dt>Account age</dt><dd id="accountAgeHighlight">--</dd></div>
-            </dl>
-          </section>
-
-          <section class="block block-wide">
-            <header class="block-head">
-              <h3>Possible improvements</h3>
-            </header>
-            <ul id="suggestionsList" class="suggestions-list">
-              <li>Search a profile to see practical suggestions based on public repository data.</li>
-            </ul>
-          </section>
-        </div>
-      </div>
-
-      <!-- Repositories tab -->
-      <div class="tab-panel" data-panel="repos" role="tabpanel" hidden>
-        <div class="repo-toolbar">
-          <p id="repoCountLabel" class="repo-count-label"></p>
-          <div class="repo-controls">
-            <label class="select-wrap">
-              <i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
+        <!-- 06 Repositories -->
+        <section id="ch-repos" class="chapter" data-reveal>
+          <header class="chapter-head">
+            <span class="chapter-no">06</span>
+            <h3>The <em>repositories</em></h3>
+            <p id="repoCountLabel" class="chapter-note"></p>
+          </header>
+          <div class="repo-toolbar">
+            <label class="select-line">
+              <span class="mono-label">Sort</span>
               <select id="sortSelect" aria-label="Sort repositories">
                 <option value="updated">Recently pushed</option>
                 <option value="stars">Most stars</option>
@@ -268,27 +255,29 @@
                 <option value="name">Name A–Z</option>
               </select>
             </label>
-            <label class="select-wrap">
-              <i class="fa-solid fa-filter" aria-hidden="true"></i>
+            <label class="select-line">
+              <span class="mono-label">Language</span>
               <select id="languageFilter" aria-label="Filter by language">
                 <option value="all">All languages</option>
               </select>
             </label>
           </div>
-        </div>
-        <div id="repoTruncateWarning" class="notice hidden">
-          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-          Showing the first 100 repositories. Totals above reflect only the loaded set.
-        </div>
-        <div id="repoList" class="repo-list">
-          <div class="empty-state">Search a profile to review repositories.</div>
-        </div>
-      </div>
+          <div id="repoTruncateWarning" class="notice hidden">
+            <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+            Showing the first 100 repositories. Totals above reflect only the loaded set.
+          </div>
+          <div id="repoList" class="repo-list">
+            <div class="empty-state">Search a profile to review repositories.</div>
+          </div>
+        </section>
+      </article>
     </div>
   </main>
 
-  <footer class="footer shell">
-    Built with the public GitHub REST API · No sign-in, no tracking
+  <footer class="colophon wrap">
+    <span class="colophon-name">DevScope</span>
+    <span>Built on the public GitHub REST API · No sign-in, no tracking</span>
+    <a href="#" class="back-top" id="backTop"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> Back to top</a>
   </footer>
 
   <section id="messageBox" class="message-box hidden" role="alert"></section>
