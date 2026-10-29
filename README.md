@@ -30,7 +30,7 @@ DevScope is a clean and responsive web application for reviewing public GitHub p
 
 - HTML5
 - CSS3
-- Vanilla JavaScript
+- Vanilla JavaScript (ES modules)
 - GitHub REST API
 
 ---
@@ -38,9 +38,40 @@ DevScope is a clean and responsive web application for reviewing public GitHub p
 ## How to Run Locally
 
 1. Clone the repository and open the folder
-2. Open `index.html` in a browser (double-click works), or serve the folder with a static server such as VS Code Live Server
+2. Serve the folder with a static server, for example VS Code Live Server or:
+
+```bash
+python -m http.server 5500
+```
+
+3. Open http://localhost:5500
+
+The scripts are ES modules, so opening `index.html` directly from the file system (double-click) will not work; browsers block module loading from `file://` URLs.
 
 No build step or dependencies are required.
+
+---
+
+## Project Structure
+
+```
+index.html            Page layout
+style.css             Styles and light/dark theme
+js/
+  main.js             Entry point: event wiring, load and compare flows
+  api.js              GitHub API requests and rate-limit handling
+  analysis.js         Pure scoring and insight logic (no DOM access)
+  storage.js          localStorage access for recent searches and theme
+  ui.js               Messages, button states, loading/empty/error states
+  state.js            Shared app state
+  dom.js              Element references
+  utils.js            Formatting and safe DOM helpers
+  render/
+    profile.js        Profile dashboard and summary text
+    repos.js          Repository list, sorting and filtering
+    charts.js         Language and activity charts
+    compare.js        Side-by-side comparison cards
+```
 
 ---
 
