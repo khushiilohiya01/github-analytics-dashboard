@@ -13,17 +13,24 @@ import {
   activityScore, popularityScore, documentationScore, visibilityScore,
   activityBar, popularityBar, documentationBar, visibilityBar,
   languageChart, contributionGraph, repoList, repoCountLabel, repoTruncateWarning,
+  body, repoTabCount,
 } from "./dom.js";
 
 // ─── Messages ────────────────────────────────────────────────────────────────
 
+// Messages render as a floating toast, so they dismiss themselves
+let messageTimer = null;
+
 export function showMessage(text, type = "error") {
+  clearTimeout(messageTimer);
   messageBox.textContent = text;
   messageBox.className = `message-box ${type}`;
   messageBox.classList.remove("hidden");
+  messageTimer = setTimeout(hideMessage, type === "error" ? 6000 : 2500);
 }
 
 export function hideMessage() {
+  clearTimeout(messageTimer);
   messageBox.textContent = "";
   messageBox.classList.add("hidden");
 }
@@ -67,6 +74,10 @@ export function resetDashboardToEmpty() {
   state.repos     = [];
   state.forkCount = 0;
 
+  // Back to the landing search; the dashboard is hidden by CSS
+  body.classList.remove("has-profile", "is-loading");
+  repoTabCount.textContent = "";
+
   // No src (rather than src="") avoids a broken-image icon and a request to the page itself
   profileAvatar.removeAttribute("src");
   profileAvatar.alt = "";
@@ -101,6 +112,7 @@ export function resetDashboardToEmpty() {
 }
 
 export function setLoadingUI() {
+  body.classList.add("is-loading");
   setText(profileName,     "Loading profile...");
   setText(profileUsername, "@please-wait");
   setText(profileBio,      "Fetching GitHub data...");

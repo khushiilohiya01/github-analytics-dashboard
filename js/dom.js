@@ -60,6 +60,11 @@ export const popularityBar        = document.getElementById("popularityBar");
 export const documentationBar     = document.getElementById("documentationBar");
 export const visibilityBar        = document.getElementById("visibilityBar");
 
+export const repoTabCount         = document.getElementById("repoTabCount");
+export const viewButtons          = document.querySelectorAll("[data-view-btn]");
+export const tabButtons           = document.querySelectorAll("[data-tab]");
+export const tabPanels            = document.querySelectorAll("[data-panel]");
+
 export const repoList             = document.getElementById("repoList");
 export const repoCountLabel       = document.getElementById("repoCountLabel");
 export const repoTruncateWarning  = document.getElementById("repoTruncateWarning");
