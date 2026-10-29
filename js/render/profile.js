@@ -17,12 +17,17 @@ import {
   healthScore, healthRemark,
   bestRepoHighlight, topLanguageHighlight, recentRepoHighlight, accountAgeHighlight,
   bestRepoTitle, bestRepoReason, aiSummary, suggestionsList, profileActions,
+  body, repoTabCount,
 } from "../dom.js";
 
 export function renderProfile({ profile, repos, forkCount, truncated }) {
   state.profile   = profile;
   state.repos     = repos;
   state.forkCount = forkCount;
+
+  body.classList.remove("is-loading");
+  body.classList.add("has-profile");
+  setText(repoTabCount, repos.length);
 
   const totalStars  = getTotalStars(repos);
   const totalForks  = getTotalForks(repos);

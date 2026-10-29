@@ -15,8 +15,32 @@ import {
   body, themeToggle, usernameInput, compareUser1, compareUser2, analyzeBtn, compareBtn,
   copySummaryBtn, exportSummaryBtn, shareBtn, rateLimitNotice, profileBio,
   compareSection, compareGrid, sortSelect, languageFilter,
-  recentSearchesContainer, clearRecentBtn,
+  recentSearchesContainer, clearRecentBtn, viewButtons, tabButtons, tabPanels,
 } from "./dom.js";
+
+// ─── Views (Analyze / Compare) and dashboard tabs ────────────────────────────
+
+function setView(view) {
+  body.dataset.view = view;
+  viewButtons.forEach((btn) => {
+    const active = btn.dataset.viewBtn === view;
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-selected", String(active));
+  });
+  (view === "compare" ? compareUser1 : usernameInput).focus();
+}
+
+function setTab(tab) {
+  tabButtons.forEach((btn) => {
+    const active = btn.dataset.tab === tab;
+    btn.classList.toggle("is-active", active);
+    btn.setAttribute("aria-selected", String(active));
+  });
+  tabPanels.forEach((panel) => { panel.hidden = panel.dataset.panel !== tab; });
+}
+
+viewButtons.forEach((btn) => btn.addEventListener("click", () => setView(btn.dataset.viewBtn)));
+tabButtons.forEach((btn) => btn.addEventListener("click", () => setTab(btn.dataset.tab)));
 
 // ─── Theme ───────────────────────────────────────────────────────────────────
 
@@ -86,7 +110,6 @@ copySummaryBtn.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(text);
     showMessage("Summary copied.", "success");
-    setTimeout(hideMessage, 2000);
   } catch {
     showMessage("Could not copy — please try again.");
   }
@@ -112,7 +135,6 @@ shareBtn.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(url);
     showMessage("Link copied to clipboard.", "success");
-    setTimeout(hideMessage, 2000);
   } catch {
     showMessage("Could not copy link — please copy from your address bar.");
   }
@@ -151,6 +173,7 @@ function renderRecentSearches() {
 async function compareGitHubUsers(user1, user2) {
   const requestId = ++state.compareRequestId;
   hideMessage();
+  body.classList.add("has-compare");
   compareSection.classList.remove("hidden");
   compareGrid.innerHTML = `<div class="loading-state loading-shimmer">Comparing profiles…</div>`;
   setButtonLoading(compareBtn, "Comparing…");
@@ -184,6 +207,7 @@ async function loadGitHubUser(username) {
   try {
     const data = await fetchGitHubProfile(username);
     if (requestId !== state.loadRequestId) return;
+    setTab("overview");
     renderProfile(data);
     addRecentSearch(data.profile.login || username);
     renderRecentSearches();
