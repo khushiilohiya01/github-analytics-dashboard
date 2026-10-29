@@ -10,10 +10,11 @@ DevScope is a clean and responsive web application for reviewing public GitHub p
 - Search any public GitHub profile
 - View profile insights such as repositories, stars, forks, and followers
 - Profile score based on activity, visibility, and repository quality
-- Contribution graph display for the searched profile
+- Repo activity chart (repos by month of last push, past 12 months)
 - Language distribution visualization
 - Repository analysis with sorting and filtering
-- Recent activity detection based on repository updates
+- Recent activity detection based on the latest push to each repository
+- Forked repositories are excluded from the analysis
 - Best repository recommendation
 - Practical improvement suggestions
 - Compare two GitHub profiles side by side
@@ -31,19 +32,15 @@ DevScope is a clean and responsive web application for reviewing public GitHub p
 - CSS3
 - Vanilla JavaScript
 - GitHub REST API
-- External contribution chart image service
 
 ---
 
 ## How to Run Locally
 
-1. Clone the repository  
-git clone 
-2. Open the folder
-3. Run the project
-open index.html
+1. Clone the repository and open the folder
+2. Open `index.html` in a browser (double-click works), or serve the folder with a static server such as VS Code Live Server
 
-or simply double click the file.
+No build step or dependencies are required.
 
 ---
 
@@ -54,7 +51,7 @@ DevScope helps review public GitHub profiles in a more structured way. Instead o
 - score breakdown
 - repository insights
 - comparison view
-- contribution graph display
+- repo activity chart
 - practical suggestions for improvement
 
 This makes it useful for portfolio review, internship preparation, and general developer profile analysis
@@ -72,9 +69,10 @@ This makes it useful for portfolio review, internship preparation, and general d
 
 ## Limitations
 - Works only with public GitHub profiles
-- GitHub API rate limits may apply (unauthenticated requests)
+- GitHub API rate limits apply (60 unauthenticated requests per hour; each profile uses 2, a comparison uses 4)
+- Only the first 100 repositories of a profile are loaded
 - No backend (pure frontend project)
-- Contribution graph is displayed using an external chart source, not generated from a custom backend
+- The activity chart counts each repository once, by its most recent push, so it is not a full commit history
 
 ---
 
@@ -91,8 +89,8 @@ This makes it useful for portfolio review, internship preparation, and general d
 Home Dashboard
 ![Home Dashboard](assets/home.png)
 
-Analayzed Profile
-![Analayzed Profile](assets/profile.png)
+Analyzed Profile
+![Analyzed Profile](assets/profile.png)
 
 Compare Profiles
 ![Compare Profiles](assets/compare.png)
