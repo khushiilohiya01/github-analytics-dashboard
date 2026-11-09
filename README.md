@@ -2,7 +2,9 @@
 
 A small web app I built to see how a GitHub profile comes across. I started it to get my own profile ready for internship applications, but it works just as well the other way round, for recruiters looking at a candidate's GitHub. You type in a username and it gives a score out of 100, a look at the repos and languages, and where the profile could improve.
 
-It runs entirely in the browser using the public GitHub API. No sign-in, no backend, and your recent searches stay in your browser's local storage.
+![Profile view](assets/profile.png)
+
+It runs entirely in the browser using the public GitHub API. No sign-in, no backend, and recent searches stay in the browser's local storage.
 
 ## What it shows
 
@@ -12,8 +14,9 @@ It runs entirely in the browser using the public GitHub API. No sign-in, no back
 - **Languages and best repo**: the language mix and the repo that's most worth pinning
 - **All repositories**, sortable and filterable by language
 - **Compare**: two profiles side by side
-- Copy or download a plain-text summary, or share a link to a profile
-- Light and dark theme, works on phones
+- Copy or download a plain-text summary
+- Shareable links: `?user=name` opens a profile, `?compare=a,b` opens a comparison
+- Light and dark theme (follows your system setting by default), works on phones
 
 Forked repos are left out of the analysis, since they're mostly other people's work.
 
@@ -31,15 +34,15 @@ There's no build step and nothing to install.
 
 ## Deploying
 
-It's a static site, so any static host works. For GitHub Pages: push the repo, go to **Settings → Pages**, and pick the `main` branch with the root folder.
+It's a static site, so any static host works. For GitHub Pages: go to **Settings → Pages**, and pick the `main` branch with the root folder.
 
 ## How the score works
 
 | Part | Based on |
 |---|---|
-| Activity | Share of your repos updated in the last 60 days |
-| Popularity | Total stars and forks across your repos |
-| Documentation | Share of your repos that have a description |
+| Activity | Share of repos updated in the last 60 days |
+| Popularity | Total stars and forks across all repos |
+| Documentation | Share of repos that have a description |
 | Visibility | Followers and number of public repos |
 
 The overall score weights these 30 / 28 / 20 / 22. It's a rough guide, not an official metric.
@@ -78,10 +81,3 @@ js/
 - Sign in with GitHub to raise the rate limit
 - Look at commit history, not just the last push date
 - PDF export
-
-## Screenshots
-
-![Home](assets/home.png)
-![Profile](assets/profile.png)
-![Compare](assets/compare.png)
-![Dark mode](assets/dark.png)

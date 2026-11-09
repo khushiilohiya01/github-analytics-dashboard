@@ -166,6 +166,7 @@ export function renderProfile({ profile, repos, forkCount, truncated }) {
 
   // update URL so the page is shareable
   const url = new URL(location.href);
+  url.searchParams.delete("compare");
   url.searchParams.set("user", profile.login);
   history.replaceState(null, "", url.toString());
 }

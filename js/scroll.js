@@ -59,6 +59,10 @@ export function initScrollUI() {
   }, { passive: true });
   addEventListener("resize", onScroll);
 
+  // Content loads after the first paint (a profile, a comparison), so re-check
+  // the active chapter and progress whenever the page height changes
+  if ("ResizeObserver" in window) new ResizeObserver(() => onScroll()).observe(document.body);
+
   // Highlight the clicked chapter straight away rather than waiting for the scroll to settle
   chapterLinks.forEach((link) => {
     link.addEventListener("click", () => setActiveChapter(link.getAttribute("href").slice(1)));

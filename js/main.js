@@ -49,8 +49,11 @@ themeToggle.addEventListener("click", () => {
   saveTheme(body.classList.contains("light-mode") ? "light" : "dark");
 });
 
+// A saved choice wins; otherwise follow the system light/dark setting
 function initTheme() {
-  if (readTheme() === "dark") body.classList.remove("light-mode");
+  const saved = readTheme();
+  const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+  if (saved === "dark" || (!saved && prefersDark)) body.classList.remove("light-mode");
   syncThemeIcon();
 }
 
@@ -177,6 +180,12 @@ async function compareGitHubUsers(user1, user2) {
     if (requestId !== state.compareRequestId) return;
     compareGrid.innerHTML = "";
     compareGrid.appendChild(createCompareCards(first, second));
+
+    // Make the comparison shareable, like ?user= is for a single profile
+    const url = new URL(location.href);
+    url.searchParams.delete("user");
+    url.searchParams.set("compare", `${first.profile.login},${second.profile.login}`);
+    history.replaceState(null, "", url.toString());
   } catch (error) {
     if (requestId !== state.compareRequestId) return;
     compareGrid.innerHTML = "";
@@ -227,10 +236,16 @@ function init() {
   resetDashboardToEmpty();
   renderRecentSearches();
 
-  // support ?user=username in URL for shareable links
+  // Shareable links: ?user=name for a profile, ?compare=a,b for a comparison
   const params = new URLSearchParams(location.search);
+  const [compareA, compareB] = (params.get("compare") || "").split(",").map((s) => s.trim());
   const userParam = params.get("user");
-  if (userParam) {
+  if (compareA && compareB) {
+    setView("compare");
+    compareUser1.value = compareA;
+    compareUser2.value = compareB;
+    compareGitHubUsers(compareA, compareB);
+  } else if (userParam) {
     usernameInput.value = userParam;
     loadGitHubUser(userParam);
   }
