@@ -1,130 +1,87 @@
-## DevScope 
-GitHub Profile Analytics Dashboard
+# DevScope
 
-DevScope is a clean and responsive web application for reviewing public GitHub profiles. It highlights key profile details, repository statistics, language usage, contribution graph display, comparison insights, and an overall profile score based on public activity and visibility.
+A small web app I built to see how a GitHub profile comes across. I started it to get my own profile ready for internship applications, but it works just as well the other way round, for recruiters looking at a candidate's GitHub. You type in a username and it gives a score out of 100, a look at the repos and languages, and where the profile could improve.
 
----
+It runs entirely in the browser using the public GitHub API. No sign-in, no backend, and your recent searches stay in your browser's local storage.
 
-## Features
+## What it shows
 
-- Search any public GitHub profile
-- View profile insights such as repositories, stars, forks, and followers
-- Profile score based on activity, visibility, and repository quality
-- Repo activity chart (repos by month of last push, past 12 months)
-- Language distribution visualization
-- Repository analysis with sorting and filtering
-- Recent activity detection based on the latest push to each repository
-- Forked repositories are excluded from the analysis
-- Best repository recommendation
-- Practical improvement suggestions
-- Compare two GitHub profiles side by side
-- Copy generated summary to clipboard
-- Export profile summary as a text file
-- Light / Dark mode toggle
-- Recent searches stored in local storage
-- Fully responsive layout
+- **Score out of 100**, split into activity, popularity, documentation and visibility, with the real numbers behind each part
+- **Room to improve**: a few concrete suggestions, biggest wins at the top
+- **Recent activity**: which months the repos were last updated in, over the past year
+- **Languages and best repo**: the language mix and the repo that's most worth pinning
+- **All repositories**, sortable and filterable by language
+- **Compare**: two profiles side by side
+- Copy or download a plain-text summary, or share a link to a profile
+- Light and dark theme, works on phones
 
----
+Forked repos are left out of the analysis, since they're mostly other people's work.
 
-## Tech Stack
+## Running it locally
 
-- HTML5
-- CSS3
-- Vanilla JavaScript (ES modules)
-- GitHub REST API
-
----
-
-## How to Run Locally
-
-1. Clone the repository and open the folder
-2. Serve the folder with a static server, for example VS Code Live Server or:
+The scripts are ES modules, so the page needs to be served over HTTP. Opening `index.html` by double-clicking won't work.
 
 ```bash
 python -m http.server 5500
 ```
 
-3. Open http://localhost:5500
+Then open http://localhost:5500. VS Code's Live Server works too.
 
-The scripts are ES modules, so opening `index.html` directly from the file system (double-click) will not work; browsers block module loading from `file://` URLs.
+There's no build step and nothing to install.
 
-No build step or dependencies are required.
+## Deploying
 
----
+It's a static site, so any static host works. For GitHub Pages: push the repo, go to **Settings → Pages**, and pick the `main` branch with the root folder.
 
-## Project Structure
+## How the score works
 
-```
-index.html            Page layout
-style.css             Styles and light/dark theme
-js/
-  main.js             Entry point: event wiring, load and compare flows
-  api.js              GitHub API requests and rate-limit handling
-  analysis.js         Pure scoring and insight logic (no DOM access)
-  storage.js          localStorage access for recent searches and theme
-  ui.js               Messages, button states, loading/empty/error states
-  state.js            Shared app state
-  dom.js              Element references
-  utils.js            Formatting and safe DOM helpers
-  render/
-    profile.js        Profile dashboard and summary text
-    repos.js          Repository list, sorting and filtering
-    charts.js         Language and activity charts
-    compare.js        Side-by-side comparison cards
-```
+| Part | Based on |
+|---|---|
+| Activity | Share of your repos updated in the last 60 days |
+| Popularity | Total stars and forks across your repos |
+| Documentation | Share of your repos that have a description |
+| Visibility | Followers and number of public repos |
 
----
-
-## What This Project Does
-
-DevScope helps review public GitHub profiles in a more structured way. Instead of only showing raw GitHub data, it organizes profile information into a cleaner dashboard with:
-- profile summary
-- score breakdown
-- repository insights
-- comparison view
-- repo activity chart
-- practical suggestions for improvement
-
-This makes it useful for portfolio review, internship preparation, and general developer profile analysis
-
----
-
-## Use Cases
-- Evaluate GitHub profiles for internships
-- Analyze developer activity and contribution trends
-- Compare developers side-by-side
-- Improve personal portfolio presentation
-
-
----
+The overall score weights these 30 / 28 / 20 / 22. It's a rough guide, not an official metric.
 
 ## Limitations
-- Works only with public GitHub profiles
-- GitHub API rate limits apply (60 unauthenticated requests per hour; each profile uses 2, a comparison uses 4)
-- Only the first 100 repositories of a profile are loaded
-- No backend (pure frontend project)
-- The activity chart counts each repository once, by its most recent push, so it is not a full commit history
 
----
+- Only public profiles and repos
+- GitHub allows 60 unauthenticated API requests an hour. Each profile uses 2, a comparison uses 4.
+- Only the first 100 repos of a profile are loaded
+- The activity chart counts each repo once, in the month it was last pushed to, so it isn't a full commit history
 
-## Future Improvements
-- More detailed contribution analytics
-- GitHub OAuth support
+## Project structure
+
+```
+index.html          Page markup
+style.css           All styles, light and dark themes
+js/
+  main.js           Event handlers, loading and comparing profiles
+  api.js            GitHub API calls and rate-limit handling
+  analysis.js       Scoring and suggestions (no DOM code)
+  scroll.js         Section nav, reading progress, scroll animations
+  storage.js        Recent searches and theme in localStorage
+  ui.js             Messages, buttons, loading and empty states
+  state.js          Shared state
+  dom.js            Element lookups
+  utils.js          Formatting helpers
+  render/
+    profile.js      Profile section and the copyable summary
+    repos.js        Repository list
+    charts.js       Activity and language charts
+    compare.js      Compare view
+```
+
+## Ideas for later
+
+- Sign in with GitHub to raise the rate limit
+- Look at commit history, not just the last push date
 - PDF export
-- Improved profile scoring logic
-- Better visual comparison insights
 
----
+## Screenshots
 
-## Preview
-Home Dashboard
-![Home Dashboard](assets/home.png)
-
-Analyzed Profile
-![Analyzed Profile](assets/profile.png)
-
-Compare Profiles
-![Compare Profiles](assets/compare.png)
-
-Dark Mode View
-![Dark Mode View](assets/dark.png)
+![Home](assets/home.png)
+![Profile](assets/profile.png)
+![Compare](assets/compare.png)
+![Dark mode](assets/dark.png)

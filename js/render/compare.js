@@ -1,4 +1,4 @@
-// ─── Compare cards ───────────────────────────────────────────────────────────
+// Compare cards
 
 import { formatNumber } from "../utils.js";
 import { getCompareValues, getPrimaryLanguage, getTopRepo } from "../analysis.js";
@@ -63,7 +63,7 @@ export function createCompareCards(first, second) {
     // Extra info rows (no win/loss)
     const infoRows = [
       ["Primary language", getPrimaryLanguage(data.repos)],
-      ["Top repo",         getTopRepo(data.repos)?.name || "--"],
+      ["Most starred",     getTopRepo(data.repos)?.stargazers_count ? getTopRepo(data.repos).name : "None yet"],
     ];
     infoRows.forEach(([label, value]) => {
       const item = document.createElement("div");

@@ -1,11 +1,12 @@
-// ─── Repository list ─────────────────────────────────────────────────────────
+// Repository list
 
 import { state } from "../state.js";
 import { formatNumber, formatDate, lastActivity, normalizeUrl } from "../utils.js";
+import { NO_LANGUAGE } from "../analysis.js";
 import { repoList, repoCountLabel, sortSelect, languageFilter } from "../dom.js";
 
 export function populateLanguageFilter(repos) {
-  const languages   = [...new Set(repos.map((r) => r.language || "Other"))].sort();
+  const languages   = [...new Set(repos.map((r) => r.language || NO_LANGUAGE))].sort();
   const currentVal  = languageFilter.value;
   languageFilter.innerHTML = "";
 
@@ -31,7 +32,7 @@ function getFilteredAndSortedRepos() {
   const lang = languageFilter.value;
   const sort = sortSelect.value;
 
-  if (lang !== "all") repos = repos.filter((r) => (r.language || "Other") === lang);
+  if (lang !== "all") repos = repos.filter((r) => (r.language || NO_LANGUAGE) === lang);
 
   switch (sort) {
     case "stars":   repos.sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0)); break;
@@ -95,7 +96,7 @@ function createRepoCard(repo) {
   left.appendChild(top);
 
   const desc = document.createElement("p");
-  desc.textContent = repo.description || "No description available for this repository.";
+  desc.textContent = repo.description || "No description yet.";
   left.appendChild(desc);
 
   const meta = document.createElement("div");
@@ -104,7 +105,7 @@ function createRepoCard(repo) {
   const pills = [
     { icon: "fa-solid fa-star",       text: `${formatNumber(repo.stargazers_count)} stars` },
     { icon: "fa-solid fa-code-fork",  text: `${formatNumber(repo.forks_count)} forks` },
-    { icon: "fa-solid fa-code",       text: repo.language || "Other" },
+    { icon: "fa-solid fa-code",       text: repo.language || NO_LANGUAGE },
     { icon: "fa-regular fa-calendar", text: formatDate(lastActivity(repo)) },
   ];
   // Only show size if non-zero
@@ -126,7 +127,7 @@ function createRepoCard(repo) {
   left.appendChild(meta);
   article.appendChild(left);
 
-  // Right side — actions
+  // Right side: links
   const actions = document.createElement("div");
   actions.className = "repo-actions";
 

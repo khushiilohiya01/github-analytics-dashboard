@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DevScope | GitHub Profile Analytics</title>
+  <title>DevScope · GitHub profile checker</title>
+  <meta name="description" content="Score any public GitHub profile out of 100 and see its languages, recent activity and where it could improve. For developers and recruiters." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@1,700&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -33,43 +34,62 @@
     <!-- Search: a full cover before a profile loads, a slim bar after -->
     <section class="cover wrap">
       <div class="cover-copy">
-        <p class="kicker"><span class="kicker-rule"></span> GitHub profile review · Issue Nº 1</p>
-        <h1 class="view-analyze-only">Read any GitHub profile <em>like a story.</em></h1>
-        <h1 class="view-compare-only">Two developers, <em>one page.</em></h1>
-        <p class="dek">Score, activity, languages and the next steps that matter, written up from public data in a few seconds.</p>
+        <p class="kicker"><span class="kicker-rule"></span> GitHub profile checker</p>
+        <h1 class="view-analyze-only">See what a GitHub profile <em>really shows.</em></h1>
+        <h1 class="view-compare-only">Put two profiles <em>side by side.</em></h1>
+        <p class="dek">For developers tidying up their own profile and recruiters looking at someone else's. Enter a username for a score out of 100, a look at the repos and languages, and where the profile could improve.</p>
       </div>
 
       <div class="search-line view-analyze-only" id="searchForm">
         <label for="usernameInput" class="search-at">@</label>
-        <input type="text" id="usernameInput" placeholder="github-username" autocomplete="off" spellcheck="false" />
+        <input type="text" id="usernameInput" placeholder="username" autocomplete="off" spellcheck="false" />
         <button type="button" id="analyzeBtn" class="go-btn">Analyze <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
       </div>
 
       <div class="search-line compare-line view-compare-only" id="compareForm">
         <label for="compareUser1" class="search-at">@</label>
-        <input type="text" id="compareUser1" placeholder="first-user" autocomplete="off" spellcheck="false" />
+        <input type="text" id="compareUser1" placeholder="first username" autocomplete="off" spellcheck="false" />
         <span class="vs-word" aria-hidden="true">vs.</span>
         <label for="compareUser2" class="search-at">@</label>
-        <input type="text" id="compareUser2" placeholder="second-user" autocomplete="off" spellcheck="false" />
+        <input type="text" id="compareUser2" placeholder="second username" autocomplete="off" spellcheck="false" />
         <button type="button" id="compareBtn" class="go-btn">Compare <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
       </div>
 
       <div class="recent-line view-analyze-only">
-        <span class="mono-label">Recently read</span>
+        <span class="caps-label">Recent</span>
         <div id="recentSearches" class="recent-searches"></div>
         <button type="button" id="clearRecentBtn" class="text-btn">clear</button>
       </div>
 
       <ol class="cover-index">
-        <li><span>01</span> A profile score with the reasons behind it</li>
-        <li><span>02</span> Activity, languages and your strongest project</li>
-        <li><span>03</span> Concrete next steps, most impactful first</li>
+        <li><span>01</span> A score out of 100, and what's behind it</li>
+        <li><span>02</span> Languages, recent activity and the best repo</li>
+        <li><span>03</span> Where the profile could improve</li>
       </ol>
     </section>
 
-    <!-- Scrolling ticker of usernames to try -->
-    <div class="ticker cover-only" aria-label="Try a profile">
-      <div class="ticker-track" id="tickerTrack"></div>
+    <!-- Scrolling strip of what the review covers (second copy keeps the loop seamless) -->
+    <div class="ticker cover-only" aria-label="What DevScope checks">
+      <div class="ticker-track">
+        <span class="ticker-item">Score out of 100</span>
+        <span class="ticker-item">Stars &amp; forks</span>
+        <span class="ticker-item">Languages</span>
+        <span class="ticker-item">Recent activity</span>
+        <span class="ticker-item">Repo descriptions</span>
+        <span class="ticker-item">Followers</span>
+        <span class="ticker-item">Best repo</span>
+        <span class="ticker-item">Room to improve</span>
+        <span class="ticker-item">Compare two profiles</span>
+        <span class="ticker-item" aria-hidden="true">Score out of 100</span>
+        <span class="ticker-item" aria-hidden="true">Stars &amp; forks</span>
+        <span class="ticker-item" aria-hidden="true">Languages</span>
+        <span class="ticker-item" aria-hidden="true">Recent activity</span>
+        <span class="ticker-item" aria-hidden="true">Repo descriptions</span>
+        <span class="ticker-item" aria-hidden="true">Followers</span>
+        <span class="ticker-item" aria-hidden="true">Best repo</span>
+        <span class="ticker-item" aria-hidden="true">Room to improve</span>
+        <span class="ticker-item" aria-hidden="true">Compare two profiles</span>
+      </div>
     </div>
 
     <div id="rateLimitNotice" class="notice wrap hidden">
@@ -82,14 +102,14 @@
       <div id="compareGrid" class="compare-grid"></div>
     </section>
 
-    <!-- Analyze view: the profile "article" -->
+    <!-- Analyze view: the profile report -->
     <div id="dashboard" class="dashboard wrap view-analyze-only">
       <nav class="chapters" aria-label="Sections">
         <a href="#ch-profile" class="chapter-link is-active"><span>01</span> Profile</a>
         <a href="#ch-score" class="chapter-link"><span>02</span> Score</a>
-        <a href="#ch-steps" class="chapter-link"><span>03</span> Next steps</a>
+        <a href="#ch-steps" class="chapter-link"><span>03</span> To improve</a>
         <a href="#ch-activity" class="chapter-link"><span>04</span> Activity</a>
-        <a href="#ch-stack" class="chapter-link"><span>05</span> Stack</a>
+        <a href="#ch-stack" class="chapter-link"><span>05</span> Languages</a>
         <a href="#ch-repos" class="chapter-link"><span>06</span> Repos <em id="repoTabCount" class="chapter-count"></em></a>
       </nav>
 
@@ -101,7 +121,7 @@
               <img id="profileAvatar" alt="" />
             </div>
             <div class="byline-text">
-              <p class="mono-label">The developer</p>
+              <p id="profileKind" class="caps-label">Developer</p>
               <h2 id="profileName">No profile selected</h2>
               <p id="profileUsername" class="handle">@search-a-username</p>
               <p id="profileBio" class="bio">Search a public GitHub username to load profile details and repository insights.</p>
@@ -129,18 +149,18 @@
               </div>
             </div>
             <p class="level-line"><em id="profileLevel">--</em></p>
-            <p id="healthRemark" class="remark">Load a profile to see the score based on public activity, visibility, and repository details.</p>
+            <p id="healthRemark" class="remark">Search for a profile to see its score.</p>
           </div>
 
           <dl class="figures">
-            <div><dt>Repositories</dt><dd id="repoCount">--</dd></div>
+            <div><dt>Public repos</dt><dd id="repoCount">--</dd></div>
             <div><dt>Stars</dt><dd id="starsCount">--</dd></div>
             <div><dt>Forks</dt><dd id="forksCount">--</dd></div>
             <div><dt>Followers</dt><dd id="followersCount">--</dd></div>
           </dl>
 
           <blockquote class="pull-quote">
-            <p id="aiSummary">Search a profile to generate a quick review.</p>
+            <p id="profileSummary">Search for a profile to see a short summary.</p>
             <ul id="profileChips" class="tags"></ul>
           </blockquote>
         </section>
@@ -149,33 +169,33 @@
         <section id="ch-score" class="chapter" data-reveal>
           <header class="chapter-head">
             <span class="chapter-no">02</span>
-            <h3>The score, <em>broken down</em></h3>
-            <p class="chapter-note">Hover a figure to see how it's measured</p>
+            <h3>Score <em>breakdown</em></h3>
+            <p class="chapter-note">Each part is scored out of 100</p>
           </header>
           <div class="metric-row">
             <article class="metric" data-metric="activity" title="Share of repos pushed to in the last 60 days">
-              <p class="mono-label"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Activity</p>
+              <p class="caps-label"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Activity</p>
               <strong id="activityScore" class="metric-value">--</strong>
               <div class="breakdown-track"><div id="activityBar" class="breakdown-fill"></div></div>
               <p class="metric-status"></p>
               <p class="metric-tip"></p>
             </article>
             <article class="metric" data-metric="popularity" title="Based on total stars and forks across repos">
-              <p class="mono-label"><i class="fa-solid fa-star" aria-hidden="true"></i> Popularity</p>
+              <p class="caps-label"><i class="fa-solid fa-star" aria-hidden="true"></i> Popularity</p>
               <strong id="popularityScore" class="metric-value">--</strong>
               <div class="breakdown-track"><div id="popularityBar" class="breakdown-fill"></div></div>
               <p class="metric-status"></p>
               <p class="metric-tip"></p>
             </article>
             <article class="metric" data-metric="documentation" title="Share of repos that have a description">
-              <p class="mono-label"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Docs</p>
+              <p class="caps-label"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Docs</p>
               <strong id="documentationScore" class="metric-value">--</strong>
               <div class="breakdown-track"><div id="documentationBar" class="breakdown-fill"></div></div>
               <p class="metric-status"></p>
               <p class="metric-tip"></p>
             </article>
             <article class="metric" data-metric="visibility" title="Based on followers and number of public repos">
-              <p class="mono-label"><i class="fa-solid fa-eye" aria-hidden="true"></i> Visibility</p>
+              <p class="caps-label"><i class="fa-solid fa-eye" aria-hidden="true"></i> Visibility</p>
               <strong id="visibilityScore" class="metric-value">--</strong>
               <div class="breakdown-track"><div id="visibilityBar" class="breakdown-fill"></div></div>
               <p class="metric-status"></p>
@@ -184,12 +204,12 @@
           </div>
         </section>
 
-        <!-- 03 Next steps -->
+        <!-- 03 Room to improve -->
         <section id="ch-steps" class="chapter" data-reveal>
           <header class="chapter-head">
             <span class="chapter-no">03</span>
-            <h3>What to do <em>next</em></h3>
-            <p class="chapter-note">Most impactful first</p>
+            <h3>Where it could <em>improve</em></h3>
+            <p class="chapter-note">Biggest wins at the top</p>
           </header>
           <ol id="suggestionsList" class="steps-list">
             <li>Search a profile to see practical suggestions based on public repository data.</li>
@@ -200,34 +220,34 @@
         <section id="ch-activity" class="chapter" data-reveal>
           <header class="chapter-head">
             <span class="chapter-no">04</span>
-            <h3>A year of <em>pushes</em></h3>
-            <p id="activitySummary" class="chapter-note">Repos by month of last push</p>
+            <h3>Recent <em>activity</em></h3>
+            <p id="activitySummary" class="chapter-note">Each repo counted in the month it was last updated</p>
           </header>
           <div id="contributionGraph" class="contribution-graph">
             <div class="empty-state">Search a profile to view repo activity.</div>
           </div>
         </section>
 
-        <!-- 05 Stack -->
+        <!-- 05 Languages & best repo -->
         <section id="ch-stack" class="chapter" data-reveal>
           <header class="chapter-head">
             <span class="chapter-no">05</span>
-            <h3>Stack &amp; <em>standouts</em></h3>
+            <h3>Languages &amp; <em>best repo</em></h3>
           </header>
           <div class="stack-cols">
             <div class="stack-col spotlight">
-              <p class="mono-label"><i class="fa-solid fa-trophy" aria-hidden="true"></i> Strongest project</p>
+              <p class="caps-label"><i class="fa-solid fa-trophy" aria-hidden="true"></i> Best repo</p>
               <strong id="bestRepoTitle" class="spotlight-title">--</strong>
               <p id="bestRepoReason" class="body-small">Load a profile to identify the strongest repository to highlight.</p>
             </div>
             <div class="stack-col">
-              <p class="mono-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Languages</p>
+              <p class="caps-label"><i class="fa-solid fa-code" aria-hidden="true"></i> Languages</p>
               <div id="languageChart" class="language-chart">
                 <div class="empty-state">Search a profile to view language distribution.</div>
               </div>
             </div>
             <div class="stack-col">
-              <p class="mono-label"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i> Highlights</p>
+              <p class="caps-label"><i class="fa-solid fa-thumbtack" aria-hidden="true"></i> Quick facts</p>
               <dl class="highlights">
                 <div><dt>Most starred</dt><dd id="bestRepoHighlight">--</dd></div>
                 <div><dt>Main language</dt><dd id="topLanguageHighlight">--</dd></div>
@@ -242,12 +262,12 @@
         <section id="ch-repos" class="chapter" data-reveal>
           <header class="chapter-head">
             <span class="chapter-no">06</span>
-            <h3>The <em>repositories</em></h3>
+            <h3>All <em>repositories</em></h3>
             <p id="repoCountLabel" class="chapter-note"></p>
           </header>
           <div class="repo-toolbar">
             <label class="select-line">
-              <span class="mono-label">Sort</span>
+              <span class="caps-label">Sort</span>
               <select id="sortSelect" aria-label="Sort repositories">
                 <option value="updated">Recently pushed</option>
                 <option value="stars">Most stars</option>
@@ -256,7 +276,7 @@
               </select>
             </label>
             <label class="select-line">
-              <span class="mono-label">Language</span>
+              <span class="caps-label">Language</span>
               <select id="languageFilter" aria-label="Filter by language">
                 <option value="all">All languages</option>
               </select>
@@ -264,7 +284,7 @@
           </div>
           <div id="repoTruncateWarning" class="notice hidden">
             <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
-            Showing the first 100 repositories. Totals above reflect only the loaded set.
+            Only the first 100 repositories were loaded, so star and fork totals may be higher.
           </div>
           <div id="repoList" class="repo-list">
             <div class="empty-state">Search a profile to review repositories.</div>
@@ -276,7 +296,6 @@
 
   <footer class="colophon wrap">
     <span class="colophon-name">DevScope</span>
-    <span>Built on the public GitHub REST API · No sign-in, no tracking</span>
     <a href="#" class="back-top" id="backTop"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> Back to top</a>
   </footer>
 

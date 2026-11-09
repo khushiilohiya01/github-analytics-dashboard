@@ -1,4 +1,4 @@
-// ─── Entry point: event wiring, load / compare flows, init ───────────────────
+// Entry point: event wiring, load / compare flows, init
 
 import { state } from "./state.js";
 import { setText } from "./utils.js";
@@ -16,13 +16,11 @@ import {
   body, themeToggle, usernameInput, compareUser1, compareUser2, analyzeBtn, compareBtn,
   copySummaryBtn, exportSummaryBtn, shareBtn, rateLimitNotice, profileBio,
   compareSection, compareGrid, sortSelect, languageFilter,
-  recentSearchesContainer, clearRecentBtn, viewButtons, tickerTrack,
+  recentSearchesContainer, clearRecentBtn, viewButtons,
 } from "./dom.js";
 
-// Shown in the landing ticker alongside the user's own recent searches
-const TICKER_DEFAULTS = ["torvalds", "gaearon", "sindresorhus", "yyx990803", "tj", "addyosmani", "kentcdodds", "mojombo"];
 
-// ─── Views (Analyze / Compare) ───────────────────────────────────────────────
+// Views (Analyze / Compare)
 
 function setView(view) {
   body.dataset.view = view;
@@ -36,7 +34,7 @@ function setView(view) {
 
 viewButtons.forEach((btn) => btn.addEventListener("click", () => setView(btn.dataset.viewBtn)));
 
-// ─── Theme ───────────────────────────────────────────────────────────────────
+// Theme
 
 // Paper (light) is the default; the icon shows the theme you'd switch to
 function syncThemeIcon() {
@@ -56,7 +54,7 @@ function initTheme() {
   syncThemeIcon();
 }
 
-// ─── Search / Compare events ─────────────────────────────────────────────────
+// Search / Compare events
 
 // No <form> wrapper, so handle both the button click and the Enter key
 analyzeBtn.addEventListener("click", async () => {
@@ -99,7 +97,7 @@ clearRecentBtn.addEventListener("click", () => {
   renderRecentSearches();
 });
 
-// ─── Summary actions ─────────────────────────────────────────────────────────
+// Summary actions
 
 copySummaryBtn.addEventListener("click", async () => {
   const text = buildSummaryText();
@@ -107,7 +105,7 @@ copySummaryBtn.addEventListener("click", async () => {
     await navigator.clipboard.writeText(text);
     showMessage("Summary copied.", "success");
   } catch {
-    showMessage("Could not copy — please try again.");
+    showMessage("Couldn't copy that. Please try again.");
   }
 });
 
@@ -132,38 +130,14 @@ shareBtn.addEventListener("click", async () => {
     await navigator.clipboard.writeText(url);
     showMessage("Link copied to clipboard.", "success");
   } catch {
-    showMessage("Could not copy link — please copy from your address bar.");
+    showMessage("Couldn't copy the link. You can copy it from the address bar.");
   }
 });
 
-// ─── Recent searches ─────────────────────────────────────────────────────────
-
-function renderTicker() {
-  const names = [...new Set([...readRecentSearches(), ...TICKER_DEFAULTS])].slice(0, 10);
-  tickerTrack.innerHTML = "";
-  // Two copies so the marquee loops seamlessly; the second is hidden from assistive tech
-  [false, true].forEach((isCopy) => {
-    names.forEach((name) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "ticker-item";
-      btn.textContent = `@${name}`;
-      if (isCopy) {
-        btn.setAttribute("aria-hidden", "true");
-        btn.tabIndex = -1;
-      }
-      btn.addEventListener("click", () => {
-        usernameInput.value = name;
-        loadGitHubUser(name);
-      });
-      tickerTrack.appendChild(btn);
-    });
-  });
-}
+// Recent searches
 
 function renderRecentSearches() {
   const searches = readRecentSearches();
-  renderTicker();
 
   recentSearchesContainer.innerHTML = "";
   if (!searches.length) {
@@ -188,7 +162,7 @@ function renderRecentSearches() {
   });
 }
 
-// ─── Compare ──────────────────────────────────────────────────────────────────
+// Compare
 
 async function compareGitHubUsers(user1, user2) {
   const requestId = ++state.compareRequestId;
@@ -216,7 +190,7 @@ async function compareGitHubUsers(user1, user2) {
   }
 }
 
-// ─── Main load ────────────────────────────────────────────────────────────────
+// Main load
 
 async function loadGitHubUser(username) {
   const requestId = ++state.loadRequestId;
@@ -245,7 +219,7 @@ async function loadGitHubUser(username) {
   }
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// Init
 
 function init() {
   initTheme();

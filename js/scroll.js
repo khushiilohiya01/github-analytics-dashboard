@@ -1,4 +1,4 @@
-// ─── Scroll UI: reveal-on-scroll, chapter nav highlighting, reading progress ─
+// Scroll UI: reveal-on-scroll, chapter nav highlighting, reading progress
 
 import { readProgress, chapterNav, chapterLinks, chapterSections, backTop } from "./dom.js";
 

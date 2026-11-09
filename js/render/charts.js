@@ -1,4 +1,4 @@
-// ─── Language and activity charts ────────────────────────────────────────────
+// Language and activity charts
 
 import { lastActivity, setText } from "../utils.js";
 import { getLanguageData } from "../analysis.js";
@@ -80,13 +80,13 @@ export function renderActivityChart(repos) {
   const maxCount = Math.max(busiest.count, 1);
 
   setText(activitySummary, total
-    ? `${total} repo${total !== 1 ? "s" : ""} pushed in the last 12 months · busiest in ${busiest.label}`
-    : "No pushes in the last 12 months");
+    ? `${total} repo${total !== 1 ? "s" : ""} updated in the last 12 months · most in ${busiest.long}`
+    : "No repos updated in the last 12 months");
 
   // Only numbers and locale month names go into this markup, so a string template is safe
   const bars = months.map((m, i) => {
     const height = m.count ? Math.max(Math.round((m.count / maxCount) * 100), 8) : 0;
-    const tip = `${m.count} repo${m.count !== 1 ? "s" : ""} last pushed in ${m.long}`;
+    const tip = `${m.count} repo${m.count !== 1 ? "s" : ""} last updated in ${m.long}`;
     return `
       <div class="act-col${m.count ? "" : " is-empty"}${m === busiest && m.count ? " is-peak" : ""}" data-tip="${tip}">
         <div class="act-bar-wrap">

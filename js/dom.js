@@ -1,4 +1,4 @@
-// ─── DOM refs ────────────────────────────────────────────────────────────────
+// DOM refs
 
 export const themeToggle          = document.getElementById("themeToggle");
 export const body                 = document.body;
@@ -20,6 +20,7 @@ export const compareSection       = document.getElementById("compareSection");
 export const compareGrid          = document.getElementById("compareGrid");
 
 export const profileAvatar        = document.getElementById("profileAvatar");
+export const profileKind          = document.getElementById("profileKind");
 export const profileName          = document.getElementById("profileName");
 export const profileUsername      = document.getElementById("profileUsername");
 export const profileBio           = document.getElementById("profileBio");
@@ -48,7 +49,7 @@ export const accountAgeHighlight  = document.getElementById("accountAgeHighlight
 
 export const bestRepoTitle        = document.getElementById("bestRepoTitle");
 export const bestRepoReason       = document.getElementById("bestRepoReason");
-export const aiSummary            = document.getElementById("aiSummary");
+export const profileSummary       = document.getElementById("profileSummary");
 export const suggestionsList      = document.getElementById("suggestionsList");
 
 export const profileLevel         = document.getElementById("profileLevel");
@@ -72,7 +73,6 @@ export const readProgress         = document.getElementById("readProgress");
 export const chapterNav           = document.querySelector(".chapters");
 export const chapterLinks         = document.querySelectorAll(".chapter-link");
 export const chapterSections      = [...document.querySelectorAll(".chapter")];
-export const tickerTrack          = document.getElementById("tickerTrack");
 export const backTop              = document.getElementById("backTop");
 
 export const repoList             = document.getElementById("repoList");

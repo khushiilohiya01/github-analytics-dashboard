@@ -1,4 +1,5 @@
-// ─── Local storage ───────────────────────────────────────────────────────────
+// Local storage
+
 // localStorage can be blocked or hold a corrupted value, so every access is guarded.
 
 const RECENT_KEY = "devscope-recent";

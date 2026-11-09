@@ -1,11 +1,7 @@
-// ─── Utility helpers ─────────────────────────────────────────────────────────
+// Utility helpers
 
 export function formatNumber(num) {
   return Number(num || 0).toLocaleString();
-}
-
-export function safeText(value, fallback = "Not available") {
-  return value && String(value).trim() ? value : fallback;
 }
 
 export function normalizeUrl(url) {
@@ -30,13 +26,13 @@ export function lastActivity(repo) {
   return repo.pushed_at || repo.updated_at;
 }
 
-// XSS — safe DOM text setter
+// Set text without parsing it as HTML
 export function setText(el, value) {
   if (!el) return;
   el.textContent = value;
 }
 
-// XSS — safe attribute setter
+// Set an attribute without touching innerHTML
 export function setAttr(el, attr, value) {
   if (!el) return;
   el.setAttribute(attr, value);

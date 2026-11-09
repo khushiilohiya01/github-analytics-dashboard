@@ -1,4 +1,4 @@
-// ─── GitHub API ───────────────────────────────────────────────────────────────
+// GitHub API
 
 function isRateLimited(res) {
   return res.status === 429 || (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0");

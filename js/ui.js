@@ -1,4 +1,4 @@
-// ─── Shared UI states: messages, buttons, loading / empty / error ────────────
+// Shared UI states: messages, buttons, loading / empty / error
 
 import { state } from "./state.js";
 import { setText } from "./utils.js";
@@ -9,7 +9,7 @@ import {
   repoCount, starsCount, forksCount, followersCount,
   healthScore, healthRemark,
   bestRepoHighlight, topLanguageHighlight, recentRepoHighlight, accountAgeHighlight,
-  bestRepoTitle, bestRepoReason, aiSummary, suggestionsList,
+  bestRepoTitle, bestRepoReason, profileSummary, suggestionsList,
   activityScore, popularityScore, documentationScore, visibilityScore,
   activityBar, popularityBar, documentationBar, visibilityBar,
   languageChart, contributionGraph, repoList, repoCountLabel, repoTruncateWarning,
@@ -35,7 +35,7 @@ export function countUp(el, target, format = (n) => n.toLocaleString(), duration
   requestAnimationFrame(step);
 }
 
-// ─── Messages ────────────────────────────────────────────────────────────────
+// Messages
 
 // Messages render as a floating toast, so they dismiss themselves
 let messageTimer = null;
@@ -54,7 +54,7 @@ export function hideMessage() {
   messageBox.classList.add("hidden");
 }
 
-// ─── Buttons ─────────────────────────────────────────────────────────────────
+// Buttons
 
 export function setButtonLoading(btn, text) {
   // Keep the first original label if a second request starts while one is in flight
@@ -69,7 +69,7 @@ export function resetButton(btn) {
   delete btn.dataset.originalText;
 }
 
-// ─── Score widgets ───────────────────────────────────────────────────────────
+// Score widgets
 
 export function setScoreRing(score) {
   const angle = typeof score === "number" ? Math.max(10, Math.min(360, Math.round((score / 100) * 360))) : 10;
@@ -95,7 +95,7 @@ export function setBreakdownUI(breakdown, tips = {}) {
   });
 }
 
-// ─── Loading / error UI ───────────────────────────────────────────────────────
+// Loading / error UI
 
 export function resetDashboardToEmpty() {
   state.profile   = null;
@@ -113,8 +113,8 @@ export function resetDashboardToEmpty() {
   setText(profileUsername, "@search-a-username");
   setText(profileBio,      "Search a public GitHub username to load profile details and repository insights.");
 
-  profileLocation.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> Not available`;
-  profileCompany.innerHTML  = `<i class="fa-solid fa-building" aria-hidden="true"></i> Not available`;
+  profileLocation.classList.add("hidden");
+  profileCompany.classList.add("hidden");
   profileJoined.classList.add("hidden");
   profileBlog.classList.add("hidden");
 
@@ -122,9 +122,9 @@ export function resetDashboardToEmpty() {
    bestRepoHighlight, topLanguageHighlight, recentRepoHighlight,
    accountAgeHighlight, bestRepoTitle].forEach((el) => setText(el, "--"));
 
-  setText(healthRemark,  "Load a profile to see the score based on public activity, visibility, and repository details.");
+  setText(healthRemark,  "Search for a profile to see its score.");
   setText(bestRepoReason,"Load a profile to identify the strongest repository to highlight.");
-  setText(aiSummary,     "Search a profile to generate a quick review.");
+  setText(profileSummary,     "Search for a profile to see a short summary.");
   setText(profileLevel,  "--");
   profileChips.innerHTML = "";
   setText(activitySummary, "Repos by month of last push");
@@ -144,19 +144,19 @@ export function resetDashboardToEmpty() {
 
 export function setLoadingUI() {
   body.classList.add("is-loading");
-  setText(profileName,     "Loading profile...");
-  setText(profileUsername, "@please-wait");
-  setText(profileBio,      "Fetching GitHub data...");
+  setText(profileName,     "Loading profile…");
+  setText(profileUsername, "");
+  setText(profileBio,      "Reading public data from GitHub…");
 
-  profileLocation.innerHTML = `<i class="fa-solid fa-location-dot" aria-hidden="true"></i> Please wait`;
-  profileCompany.innerHTML  = `<i class="fa-solid fa-building" aria-hidden="true"></i> Please wait`;
+  profileLocation.classList.add("hidden");
+  profileCompany.classList.add("hidden");
   profileJoined.classList.add("hidden");
   profileBlog.classList.add("hidden");
 
   [repoCount, starsCount, forksCount, followersCount].forEach((el) => setText(el, "…"));
 
   setText(healthScore,  "…");
-  setText(healthRemark, "Reviewing repositories and profile activity...");
+  setText(healthRemark, "Reviewing repositories and activity…");
   setScoreRing(10);
 
   [bestRepoHighlight, topLanguageHighlight, recentRepoHighlight, accountAgeHighlight].forEach((el) =>
@@ -164,7 +164,7 @@ export function setLoadingUI() {
 
   setText(bestRepoTitle,  "Loading…");
   setText(bestRepoReason, "Finding the strongest project…");
-  setText(aiSummary,      "Preparing summary…");
+  setText(profileSummary,      "Putting the summary together…");
   setText(profileLevel,   "…");
   profileChips.innerHTML = "";
   suggestionsList.innerHTML = "<li>Preparing suggestions…</li>";

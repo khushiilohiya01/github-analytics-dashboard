@@ -1,4 +1,4 @@
-// ─── State ───────────────────────────────────────────────────────────────────
+// State
 
 // One shared object, since modules can't reassign each other's exported bindings
 export const state = {
