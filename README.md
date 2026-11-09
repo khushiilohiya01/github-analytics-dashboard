@@ -1,5 +1,7 @@
 # DevScope
 
+**Live:** https://github--analytics--dashboard.vercel.app/
+
 A small web app I built to see how a GitHub profile comes across. I started it to get my own profile ready for internship applications, but it works just as well the other way round, for recruiters looking at a candidate's GitHub. You type in a username and it gives a score out of 100, a look at the repos and languages, and where the profile could improve.
 
 ![Profile view](assets/profile.png)
@@ -34,7 +36,7 @@ There's no build step and nothing to install.
 
 ## Deploying
 
-It's a static site, so any static host works. For GitHub Pages: go to **Settings → Pages**, and pick the `main` branch with the root folder.
+It's a static site, so any static host works. The live version is on Vercel, imported straight from this repo with no build command.
 
 ## How the score works
 
